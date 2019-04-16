@@ -2,3 +2,12 @@ ul img {
     width: 200px;
     height: 150px;
 }
+
+
+@media (max-width: 600px) {
+
+    ::placeholder {
+        font-size: 12px;
+    }
+
+}

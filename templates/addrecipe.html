@@ -3,11 +3,11 @@
 
 <h5>
     {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    {{ message }}
-    {% endfor %}
-    {% endif %}
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
     {% endwith %}
 </h5>
 
@@ -16,7 +16,7 @@
 <div class="row">
     <form action="{{ url_for('insert_recipe') }}" method="POST" class="col s12">
         <div class="row">
-            <div class="input-field col s6">
+            <div class="input-field col s12 m6">
                 <i class="fas fa-pepper-hot prefix"></i>
                 <select id="cuisineType" name="cuisineType">
                     <option value="" disabled selected>Choose Cuisine</option>
@@ -26,7 +26,7 @@
                 </select>
                 <label for="cuisineType">Cuisine Type</label>
             </div>
-            <div class="input-field col s6">
+            <div class="input-field col s12 m6">
                 <i class="fas fa-utensils prefix"></i>
                 <select id="courseType" name="courseType">
                     <option value="" disabled selected>Choose Course</option>
@@ -61,22 +61,22 @@
             </div>
         </div>
         <div class="row">
-            <div class="input-field col s3">
+            <div class="input-field col s12 m3">
                 <i class="fas fa-hourglass-start prefix"></i>
                 <input id="prepTime" name="prepTime" type="number" class="validate">
                 <label for="prepTime">Prep Time (mins)</label>
             </div>
-            <div class="input-field col s3">
+            <div class="input-field col s12 m3">
                 <i class="fas fa-hourglass-end prefix"></i>
                 <input id="cookTime" name="cookTime" type="number" class="validate">
                 <label for="cookTime">Cook Time (mins)</label>
             </div>
-            <div class="input-field col s3">
+            <div class="input-field col s12 m3">
                 <i class="fas fa-thermometer-three-quarters prefix"></i>
                 <input id="temp" name="temp" type="number" class="validate">
                 <label for="temp">Temp (°C)</label>
             </div>
-            <div class="input-field col s3">
+            <div class="input-field col s12 m3">
                 <select id="allergens" name="allergens" multiple>
                     <option value="" disabled>List any allergens</option>
                     {% for item in allergens %}
@@ -87,11 +87,11 @@
             </div>
         </div>
         <div class="row">
-            <div class="input-field col s6">
+            <div class="input-field col s12 m6">
                 <i class="fas fa-images prefix"></i>
                 <input id="imageUrl" name="imageUrl" type="text" class="validate"
                     placeholder="Please provide the link to your recipe image.">
-                <label for="imageUrl">Recipe Name</label>
+                <label for="imageUrl">Recipe Image</label>
             </div>
         </div>
         <div class="row">

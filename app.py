@@ -2,12 +2,13 @@ import os
 from flask import Flask, render_template, redirect, request, url_for, flash, session
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
+from slugify import slugify
 
 app = Flask(__name__)
 
 app.config["MONGO_DBNAME"] = "m4RecipiesCollection"
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
-app.secret_key = os.environ.get("SECRET_KEY")
+app.config.secret_key = os.environ.get("SECRET_KEY")
 
 mongo = PyMongo(app)
 
@@ -36,8 +37,7 @@ def add_recipe():
                         course.append(item)
                 for item in allergen_type:
                         allergens.append(item)
-        
-        return render_template("addrecipe.html", cuisine = cuisine, course = course, allergens = allergens)
+        return render_template("addrecipe.html", cuisine = sorted(cuisine), course = course, allergens = allergens)
 
 @app.route("/insert_recipe", methods=["POST"])
 def insert_recipe():
