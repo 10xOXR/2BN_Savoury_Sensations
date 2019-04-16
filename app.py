@@ -20,7 +20,9 @@ coll_cuisine = mongo.db.cuisine
 @app.route("/")
 @app.route("/show_recipes")
 def show_recipes():
-        return render_template("showrecipes.html", recipes = coll_recipies.find().sort( [("recipeName", 1)] ))
+        alpha_sort = coll_recipies.find().sort( [("recipeName", 1)] )
+        total_recipes = coll_recipies.count()
+        return render_template("showrecipes.html", recipes = alpha_sort, total_recipes = total_recipes)
 
 @app.route("/add_recipe")
 def add_recipe():
