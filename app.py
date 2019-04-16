@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 app.config["MONGO_DBNAME"] = "m4RecipiesCollection"
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
-app.config.secret_key = os.environ.get("SECRET_KEY")
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
 mongo = PyMongo(app)
 
@@ -20,7 +20,7 @@ coll_cuisine = mongo.db.cuisine
 @app.route("/")
 @app.route("/show_recipes")
 def show_recipes():
-        return render_template("showrecipes.html", recipes = coll_recipies.find())
+        return render_template("showrecipes.html", recipes = coll_recipies.find().sort( [("recipeName", 1)] ))
 
 @app.route("/add_recipe")
 def add_recipe():
@@ -47,6 +47,7 @@ def insert_recipe():
                 "cuisineType": request.form.get('cuisineType'),
                 "courseType": request.form.get('courseType'),
                 "recipeName": request.form.get('recipe_name'),
+                "recipeDesc": request.form.get('recipeDesc'),
                 "ingredients": ingredients,
                 "prepSteps": prepSteps,
                 "prepTime": request.form.get('prepTime'),
@@ -58,6 +59,12 @@ def insert_recipe():
         coll_recipies.insert_one(submission)
         flash('Thank you! Your recipe has been submitted!')
         return redirect(url_for("add_recipe"))
+
+@app.route("/recipe_detail/<recipe_id>")
+def recipe_detail(recipe_id):
+        recipe_name = coll_recipies.find_one({"_id": ObjectId(recipe_id)})
+        coll_recipies.update({"_id": ObjectId(recipe_id)}, {'$inc': {'views': 1}})
+        return render_template("recipedetail.html", recipe = recipe_name)
 
 if __name__ == "__main__":
         app.run(host=os.environ.get("IP"),
