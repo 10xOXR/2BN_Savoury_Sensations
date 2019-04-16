@@ -3,4 +3,38 @@
 
 <h3>Recipe Details: {{ recipe.recipeName }}</h3>
 
+<div class="row">
+    <div class="col s3">
+        <p>Prep Time: {{ recipe.prepTime }} minutes</p>
+    </div>
+    <div class="col s3">
+        <p>Cook Time: {{ recipe.cookTime }} minutes</p>
+    </div>
+    <div class="col s3">
+        <a class="waves-effect waves-light btn" href="{{ url_for('show_recipes') }}">Go Back</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col s12 m4 l3">
+        <h5>Ingredients</h5>
+        <ol>
+            {% for ing in recipe.ingredients %}
+            <li>
+                <p>{{ ing }}</p>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+    <div class="col s12 m8 l5">
+        <h5>Preparation Steps</h5>
+        <ol>
+            {% for step in recipe.prepSteps %}
+            <li>
+                <p> {{ step }}</p>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+
 {% endblock %}
