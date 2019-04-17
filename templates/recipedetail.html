@@ -3,15 +3,34 @@
 
 <h3>Recipe Details: {{ recipe.recipeName }}</h3>
 
+<h5>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</h5>
+
 <div class="row">
+    <div class="col s12 m6 card-image">
+        <img src="{{ recipe.imgUrl }}" alt="Recipe Image">
+    </div>
     <div class="col s3">
         <p>Prep Time: {{ recipe.prepTime }} minutes</p>
     </div>
     <div class="col s3">
         <p>Cook Time: {{ recipe.cookTime }} minutes</p>
     </div>
+</div>
+<div class="row">
     <div class="col s3">
         <a class="waves-effect waves-light btn" href="{{ url_for('show_recipes') }}">Go Back</a>
+    </div>
+    <div class="col s3">
+        <a class="waves-effect waves-light btn" href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit
+            Recipe</a>
     </div>
 </div>
 <div class="row">
