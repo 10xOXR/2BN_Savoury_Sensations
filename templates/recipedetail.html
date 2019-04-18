@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h3>Recipe Details: {{ recipe.recipeName }}</h3>
-
 <h5>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -13,9 +11,15 @@
     {% endwith %}
 </h5>
 
+<h3>Recipe Details: {{ recipe.recipeName }}</h3>
+
 <div class="row">
     <div class="col s12 m6 card-image">
-        <img src="{{ recipe.imgUrl }}" alt="Recipe Image">
+        {% if recipe.imgUrl %}
+            <img src="{{ recipe.imgUrl }}" alt="Recipe Image">
+        {% else %}
+            <img src="{{ url_for('static', filename='img/no_img.jpg') }}" alt="No Image">
+        {% endif %}
     </div>
     <div class="col s3">
         <p>Prep Time: {{ recipe.prepTime }} minutes</p>
@@ -31,6 +35,9 @@
     <div class="col s3">
         <a class="waves-effect waves-light btn" href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit
             Recipe</a>
+    </div>
+    <div class="col s3">
+        <a class="waves-effect waves-light red btn modal-trigger" href="#modal-delete">Delete Recipe</a>
     </div>
 </div>
 <div class="row">
@@ -53,6 +60,19 @@
             </li>
             {% endfor %}
         </ol>
+    </div>
+</div>
+
+<!-- Modal Structure -->
+<div id="modal-delete" class="modal">
+    <div class="modal-content">
+        <h4>Delete Recipe</h4>
+        <h5>Are you sure? This can't be undone.</h5>
+    </div>
+    <div class="modal-footer">
+        <a class="waves-effect waves-light red btn " href="{{ url_for('delete_recipe', recipe_id=recipe._id) }}">Delete
+            Recipe</a>
+        <a href="#!" class="modal-close waves-effect waves-light btn">Cancel</a>
     </div>
 </div>
 

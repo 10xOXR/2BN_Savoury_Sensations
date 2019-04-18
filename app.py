@@ -18,20 +18,23 @@ mongo = PyMongo(app)
 
 coll_users = mongo.db.users
 coll_recipes = mongo.db.recipes
-coll_cuisine = mongo.db.cuisine
-
+coll_cuisines = mongo.db.cuisines
+coll_courses = mongo.db.courses
+coll_allergens = mongo.db.allergens
 
 # Helper functions
 
 def dropdowns(list1, list2, list3):
-        for types in coll_cuisine.find():
+        for types in coll_cuisines.find():
                 cuisine_type = types.get("cuisineType")
-                course_type = types.get("courseType")
-                allergen_type = types.get("allergens")
                 for item in cuisine_type:
                         list1.append(item)
+        for types in coll_courses.find():
+                course_type = types.get("courseType")
                 for item in course_type:
                         list2.append(item)
+        for types in coll_allergens.find():
+                allergen_type = types.get("allergenType")
                 for item in allergen_type:
                         list3.append(item)
 
@@ -111,8 +114,13 @@ def insert_update(recipe_id):
                 "imgUrl": request.form.get('imageUrl'),
                 "views": currentViews
         })
-        flash('Thank you! Your recipe has been submitted!')
+        flash('Thank you! Your update has been submitted!')
         return redirect(url_for("recipe_detail", recipe_id = recipe_id))
+
+@app.route("/delete_recipe/<recipe_id>")
+def delete_recipe(recipe_id):
+        coll_recipes.remove({"_id": ObjectId(recipe_id)})
+        return redirect(url_for("show_recipes"))
 
 if __name__ == "__main__":
         app.run(host=os.environ.get("IP"),
