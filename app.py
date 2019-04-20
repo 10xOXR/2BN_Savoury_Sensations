@@ -122,6 +122,50 @@ def delete_recipe(recipe_id):
         coll_recipes.remove({"_id": ObjectId(recipe_id)})
         return redirect(url_for("show_recipes"))
 
+@app.route("/search")
+def search():
+        cuisine = []
+        course = []
+        allergens = []
+        dropdowns(cuisine, course, allergens)
+        return render_template("searchrecipes.html", cuisine = sorted(cuisine), course = course, 
+                                allergens = allergens)
+
+@app.route("/search_recipes", methods=["POST"])
+def search_recipes():
+        cuisine = []
+        course = []
+        allergens = []
+        keywords = request.form.get("search_keys").split()
+        cuisineFilter = ""
+        courseFilter = ""
+        allergenFilter = ""
+
+        dropdowns(cuisine, course, allergens)
+
+        if request.form.get("cuisineFilter") == None:
+                cuisineFilter = ""
+        else:
+                cuisineFilter = request.form.get("cuisineFilter").split()
+        
+        if request.form.get("courseFilter") == None:
+                courseFilter = ""
+        else:
+                courseFilter = request.form.get("courseFilter").split()
+        
+        if request.form.get("allergenFilter") == None:
+                allergenFilter = ""
+        else:
+                allergenFilter = request.form.getlist("allergenFilter")
+
+        search = '"' + '" "'.join(keywords) + '" "' + ''.join(cuisineFilter) + '" "' + ''.join(courseFilter) + '"' + ' -' + ' -'.join(allergenFilter)
+        print(search)
+        search_results = coll_recipes.find({"$text": {"$search": search}}).sort( [("views", -1)])
+
+        return render_template("searchrecipes.html", recipes = search_results, cuisine = sorted(cuisine), course = course, 
+                                allergens = allergens, f_cuisine = request.form.get("cuisineFilter"),
+                                f_course = request.form.get("courseFilter"), f_allergen = allergenFilter)
+
 if __name__ == "__main__":
         app.run(host=os.environ.get("IP"),
         port=os.environ.get("PORT"),
