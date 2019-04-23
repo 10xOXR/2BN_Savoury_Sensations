@@ -1,7 +1,8 @@
 import os
-from flask import Flask, render_template, redirect, request, url_for, flash, session
+from flask import Flask, render_template, redirect, request, url_for, flash, Markup, session
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
+from werkzeug.security import check_password_hash, generate_password_hash
 from slugify import slugify
 
 app = Flask(__name__)
@@ -80,6 +81,10 @@ def insert_recipe():
 @app.route("/recipe_detail/<recipe_id>")
 def recipe_detail(recipe_id):
         recipe_name = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
+        test = ""
+        if "recipeDesc" in recipe_name:
+                test = recipe_name["recipeDesc"]
+        print(test)
         coll_recipes.update({"_id": ObjectId(recipe_id)}, {'$inc': {'views': 1}})
         return render_template("recipedetail.html", recipe = recipe_name)
 
@@ -165,6 +170,34 @@ def search_recipes():
         return render_template("searchrecipes.html", recipes = search_results, cuisine = sorted(cuisine), course = course, 
                                 allergens = allergens, f_cuisine = request.form.get("cuisineFilter"),
                                 f_course = request.form.get("courseFilter"), f_allergen = allergenFilter)
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+        if request.method == "POST":
+                registered_user = coll_users.find_one({"username": request.form.get('username').lower()})
+                if registered_user:
+                        flash(f"Sorry, but {request.form.get('username')} has already been taken.")
+                        return render_template("signup.html")
+
+                if len(request.form.get("username")) < 5 or len(request.form.get("username")) > 15:
+                        flash("Usernames should be 5 - 15 characters long.")
+                        return render_template("signup.html")
+
+                if len(request.form.get("password")) < 5 or len(request.form.get("password")) > 15:
+                        flash("Passwords should be 5 - 15 characters long.")
+                        return render_template("signup.html")
+
+                user = {
+                        "username": request.form.get('username').lower(),
+                        "display_name": request.form.get('display_name'),
+                        "password": generate_password_hash(request.form.get("password")),
+                        "user_recipes": [],
+                        "user_favs": []
+                }
+                coll_users.insert_one(user)
+                return redirect(url_for("show_recipes"))
+
+        return render_template("signup.html")
 
 if __name__ == "__main__":
         app.run(host=os.environ.get("IP"),
