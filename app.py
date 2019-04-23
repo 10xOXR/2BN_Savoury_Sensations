@@ -201,6 +201,24 @@ def signup():
 
         return render_template("signup.html")
 
+#User Login
+@app.route("/login", methods=["GET", "POST"])
+def login():
+        if request.method == "POST":
+                registered_user = coll_users.find_one({"username": request.form.get('username').lower()})
+                if registered_user:
+                        if check_password_hash(registered_user["password"], request.form.get("password")):
+                                session["user"] = request.form.get('username').lower()
+                                return redirect(url_for("show_recipes"))
+                        else:
+                                flash("Incorrect Username or Password")
+                                return render_template("login.html")
+                else:
+                        flash("Incorrect Username or Password")
+                        return render_template("login.html")
+
+        return render_template("login.html")
+
 # User Logout
 @app.route("/logout")
 def logout():

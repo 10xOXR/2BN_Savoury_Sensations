@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <h3 class="col s12 offset-m3 m6 offset-l3 l6">Log in</h3>
+
+        <form action="{{ url_for('login') }}" method="POST" class="col s12">
+            <div class="row">
+                <div class="input-field col s12 offset-m3 m6 offset-l3 l6">
+                    <i class="fas fa-user prefix"></i>
+                    <input id="username" name="username" type="text" class="validate" required>
+                    <label for="username">Username</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 offset-m3 m6 offset-l3 l6">
+                    <i class="fas fa-key prefix"></i>
+                    <input id="password" name="password" type="password" class="validate" required>
+                    <label for="password">Password</label>
+                </div>
+            </div>
+            <div class="row">
+                <h5 class="red-text col s12 offset-m3 m6 offset-l3 l6">
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </h5>
+            </div>
+            <div class="row">
+                <button class="btn waves-effect waves-light col s6 offset-m3 m3 offset-l3 l2" type="submit"
+                    name="action">Log in
+                    <i class="material-icons right">check_circle</i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
