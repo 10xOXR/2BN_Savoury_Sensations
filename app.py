@@ -58,6 +58,7 @@ def add_recipe():
 
 @app.route("/insert_recipe", methods=["POST"])
 def insert_recipe():
+        author = coll_users.find_one({"username": session["user"]})["_id"]
         ingredients = request.form.get('ingredients').splitlines()
         prepSteps = request.form.get('prepSteps').splitlines()
         submission = {
@@ -72,6 +73,7 @@ def insert_recipe():
                 "temp": request.form.get('temp'),
                 "allergens": request.form.getlist('allergens'),
                 "imgUrl": request.form.get('imageUrl'),
+                "author": author,
                 "views": 0
         }
         insertRecipe = coll_recipes.insert_one(submission)
@@ -81,12 +83,9 @@ def insert_recipe():
 @app.route("/recipe_detail/<recipe_id>")
 def recipe_detail(recipe_id):
         recipe_name = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
-        test = ""
-        if "recipeDesc" in recipe_name:
-                test = recipe_name["recipeDesc"]
-        print(test)
+        author = coll_users.find_one({"_id": ObjectId(recipe_name.get("author"))})["username"]
         coll_recipes.update({"_id": ObjectId(recipe_id)}, {'$inc': {'views': 1}})
-        return render_template("recipedetail.html", recipe = recipe_name)
+        return render_template("recipedetail.html", recipe = recipe_name, author = author)
 
 @app.route("/update_recipe/<recipe_id>")
 def update_recipe(recipe_id):
@@ -104,6 +103,7 @@ def insert_update(recipe_id):
         recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
         ingredients = request.form.get('ingredients').splitlines()
         prepSteps = request.form.get('prepSteps').splitlines()
+        author = recipe.get("author")
         currentViews = recipe.get("views")
         coll_recipes.update({"_id": ObjectId(recipe_id)}, {
                 "cuisineType": request.form.get('cuisineType'),
@@ -117,6 +117,7 @@ def insert_update(recipe_id):
                 "temp": request.form.get('temp'),
                 "allergens": request.form.getlist('allergens'),
                 "imgUrl": request.form.get('imageUrl'),
+                "author": author,
                 "views": currentViews
         })
         flash('Thank you! Your update has been submitted!')
