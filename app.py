@@ -171,6 +171,7 @@ def search_recipes():
                                 allergens = allergens, f_cuisine = request.form.get("cuisineFilter"),
                                 f_course = request.form.get("courseFilter"), f_allergen = allergenFilter)
 
+# User Sign-up
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
         if request.method == "POST":
@@ -195,9 +196,16 @@ def signup():
                         "user_favs": []
                 }
                 coll_users.insert_one(user)
+                session["user"] = request.form.get('username').lower()
                 return redirect(url_for("show_recipes"))
 
         return render_template("signup.html")
+
+# User Logout
+@app.route("/logout")
+def logout():
+        session.pop("user")
+        return redirect(url_for("show_recipes"))
 
 if __name__ == "__main__":
         app.run(host=os.environ.get("IP"),
