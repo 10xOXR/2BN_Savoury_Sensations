@@ -23,16 +23,17 @@
     </div>
     <div class="col s3">
         <p>Prep Time: {{ recipe.prepTime }} minutes</p>
+        <p>Cook Time: {{ recipe.cookTime }} minutes</p>
     </div>
     <div class="col s3">
-        <p>Cook Time: {{ recipe.cookTime }} minutes</p>
+        <p>Author: {{ author }}</p>
     </div>
 </div>
 <div class="row">
     <div class="col s3">
         <a class="waves-effect waves-light btn" href="{{ url_for('show_recipes') }}">Go Back</a>
     </div>
-    {% if session.user == author %}
+    {% if session.user == author|lower %}
     <div class="col s3">
         <a class="waves-effect waves-light btn" href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit
             Recipe</a>
