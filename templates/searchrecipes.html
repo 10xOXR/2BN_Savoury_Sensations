@@ -1,92 +1,92 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h3>Search Recipes</h3>
-
-<div class="row">
-    <form action="{{ url_for('search_recipes') }}" method="POST" class="col s12">
-        <div class="row">
-            <div class="input-field col s12">
-                <i class="fas fa-file-alt prefix"></i>
-                <input id="search_keys" name="search_keys" type="text" class="validate"
-                    placeholder="Please enter your search terms." value="{{ request.form['search_keys'] }}">
-                <label for="recipe_name">Keywords</label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="input-field col s12 m4">
-                <i class="fas fa-pepper-hot prefix"></i>
-                <select id="cuisineFilter" name="cuisineFilter">
-                    <option value="" disabled selected>Filter by Cuisine</option>
-                    {% for item in cuisine %}
-                        {% if item == f_cuisine %}
-                            <option value="{{ item }}" selected>{{ item }}</option>
-                        {% else %}
-                            <option value="{{ item }}">{{ item }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <label for="cuisineFilter">Cuisine Type</label>
-            </div>
-            <div class="input-field col s12 m4">
-                <i class="fas fa-utensils prefix"></i>
-                <select id="courseFilter" name="courseFilter">
-                    <option value="" disabled selected>Filter by Course</option>
-                    {% for item in course %}
-                        {% if item == f_course %}
-                            <option value="{{ item }}" selected>{{ item }}</option>
-                        {% else %}
-                            <option value="{{ item }}">{{ item }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <label for="courseFilter">Course Type</label>
-            </div>
-            <div class="input-field col s12 m4">
-                <select id="allergenFilter" name="allergenFilter" multiple>
-                    <option value="" disabled>Filter out allergens</option>
-                    {% for item in allergens %}
-                        {% if item in f_allergen %}
-                            <option value="{{ item }}" selected>{{ item }}</option>
-                        {% else %}
-                            <option value="{{ item }}">{{ item }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <label for="allergenFilter">Allergens</label>
-            </div>
-        </div>
-        <div class="row">
-            <button class="btn waves-effect waves-light" type="submit" name="action">Search
-                    <i class="fas fa-search left"></i>
-            </button>
-        </div>
-    </form>
-
+<div class="container-main">
+    <h3>Search Recipes</h3>
     <div class="row">
-        {% for recipe in recipes %}
-        <div class="col s12 m6 l3">
-            <div class="card sticky-action">
-                <div class="card-image waves-effect waves-block waves-light">
-                    {% if recipe.imgUrl %}
-                    <img class="activator" src="{{ recipe.imgUrl }}">
-                    {% else %}
-                    <img class="activator" src="{{ url_for('static', filename='img/no_img.jpg') }}">
-                    {% endif %}
-                    <span class="card-title">{{ recipe.recipeName }}</span>
-                </div>
-                <div class="card-action">
-                    <a href="{{ url_for('recipe_detail', recipe_id=recipe._id) }}">View Recipe</a>
-                    <p>Views: {{ recipe.views }}</p>
-                </div>
-                <div class="card-reveal">
-                    <span class="card-title grey-text text-darken-4">{{ recipe.recipeName }}<i
-                            class="material-icons right">close</i></span>
-                    <p>{{ recipe.recipeDesc }}</p>
+        <form action="{{ url_for('search_recipes') }}" method="POST" class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="fas fa-file-alt prefix"></i>
+                    <input id="search_keys" name="search_keys" type="text" class="validate"
+                        placeholder="Please enter your search terms." value="{{ request.form['search_keys'] }}">
+                    <label for="recipe_name">Keywords</label>
                 </div>
             </div>
-        </div>
-        {% endfor %}
-    </div>
+            <div class="row">
+                <div class="input-field col s12 m4">
+                    <i class="fas fa-pepper-hot prefix"></i>
+                    <select id="cuisineFilter" name="cuisineFilter">
+                        <option value="" disabled selected>Filter by Cuisine</option>
+                        {% for item in cuisine %}
+                        {% if item == f_cuisine %}
+                        <option value="{{ item }}" selected>{{ item }}</option>
+                        {% else %}
+                        <option value="{{ item }}">{{ item }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label for="cuisineFilter">Cuisine Type</label>
+                </div>
+                <div class="input-field col s12 m4">
+                    <i class="fas fa-utensils prefix"></i>
+                    <select id="courseFilter" name="courseFilter">
+                        <option value="" disabled selected>Filter by Course</option>
+                        {% for item in course %}
+                        {% if item == f_course %}
+                        <option value="{{ item }}" selected>{{ item }}</option>
+                        {% else %}
+                        <option value="{{ item }}">{{ item }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label for="courseFilter">Course Type</label>
+                </div>
+                <div class="input-field col s12 m4">
+                    <select id="allergenFilter" name="allergenFilter" multiple>
+                        <option value="" disabled>Filter out allergens</option>
+                        {% for item in allergens %}
+                        {% if item in f_allergen %}
+                        <option value="{{ item }}" selected>{{ item }}</option>
+                        {% else %}
+                        <option value="{{ item }}">{{ item }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label for="allergenFilter">Allergens</label>
+                </div>
+            </div>
+            <div class="row">
+                <button class="btn waves-effect waves-light" type="submit" name="action">Search
+                    <i class="fas fa-search left"></i>
+                </button>
+            </div>
+        </form>
 
+        <div class="row">
+            {% for recipe in recipes %}
+            <div class="col s12 m6 l3">
+                <div class="card hoverable sticky-action">
+                    <div class="card-image waves-effect waves-block waves-light">
+                        {% if recipe.imgUrl %}
+                        <img class="activator" src="{{ recipe.imgUrl }}">
+                        {% else %}
+                        <img class="activator" src="{{ url_for('static', filename='img/no_img.jpg') }}">
+                        {% endif %}
+                        <span class="card-title">{{ recipe.recipeName }}</span>
+                    </div>
+                    <div class="card-action">
+                        <a href="{{ url_for('recipe_detail', recipe_id=recipe._id) }}">View Recipe</a>
+                        <p>Views: {{ recipe.views }}</p>
+                    </div>
+                    <div class="card-reveal">
+                        <span class="card-title grey-text text-darken-4">{{ recipe.recipeName }}<i
+                                class="material-icons right">close</i></span>
+                        <p>{{ recipe.recipeDesc }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     {% endblock %}

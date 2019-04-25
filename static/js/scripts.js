@@ -4,4 +4,5 @@ $(document).ready(function () {
     $('select').formSelect();
     $('.collapsible').collapsible();
     $('.modal').modal();
+    $('.sidenav').sidenav();
 });

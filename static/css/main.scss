@@ -1,6 +1,18 @@
-.card-image img {
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.card {
+    border-radius: 20px;
+}
+
+.card .card-image img {
     object-fit: cover;
-    height: 20vw;
+    height: 35vh;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
 }
 
 .card .card-image .card-title {
@@ -14,11 +26,66 @@
     grid-template-columns: 1fr 1fr;
     justify-items: center;
     align-items: center;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
 }
 
 .pagination li {
     display: inline-block;
     font-size: 1.2rem;
+}
+
+nav {
+    position: fixed;
+    top: 0px;    
+    z-index: 10;
+}
+
+nav .brand-logo {
+    font-size: 1.5rem;
+}
+
+.container-nav {
+    width: 95vw;
+    margin: auto;
+}
+
+main {
+    padding-top: 45px;
+    flex: 1 0 auto;
+}
+
+.container-main {
+    width: 90vw;
+    margin: auto;
+}
+
+.social-icons {
+    grid-area: icons;
+    justify-items: end;
+    font-size: 2rem;
+    text-align: right;
+}
+
+#footer {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "copyright icons";
+    height: 50px;
+    width: 100%;
+    bottom: 0px;
+    z-index: 10;
+    padding: 0px;
+}
+
+#footer a {
+    text-decoration: none;
+    color: #fff;
+}
+
+#footer p {
+    grid-area: copyright;
+    margin: 14px 0px 10px 50px;
 }
 
 @media (max-width: 600px) {
@@ -30,5 +97,13 @@
     .card-image img {
         object-fit: cover;
         height: 30vh;
+    }
+
+    #footer p {
+        margin: 14px 0px 10px 10px;
+    }
+
+    #footer .container {
+        margin: 3px 0px 0px 0px;
     }
 }

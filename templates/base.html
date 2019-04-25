@@ -17,14 +17,15 @@
 
     <header>
         <nav>
-            <div class="nav-wrapper">
+            <div class="nav-wrapper container-nav">
                 <a href="{{ url_for('show_recipes') }}" class="brand-logo">2BN Savoury Sensations</a>
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                     <li><a href="{{ url_for('show_recipes') }}">Home</a></li>
                     {% if session.user %}
                     <li><a href="{{ url_for('add_recipe') }}">Add Recipe</a></li>
                     <li><a href="{{ url_for('search') }}">Search</a></li>
-                    <li><a href="#">Profile</a></li>
+                    <li><a href="{{ url_for('profile', username = session.user) }}">Profile</a></li>
                     <li><a href="{{ url_for('logout') }}">Logout</a></li>
                     {% else %}
                     <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
@@ -34,11 +35,36 @@
                 </ul>
             </div>
         </nav>
+
+        <ul class="sidenav" id="mobile-demo">
+                <li><a href="{{ url_for('show_recipes') }}">Home</a></li>
+                {% if session.user %}
+                <li><a href="{{ url_for('add_recipe') }}">Add Recipe</a></li>
+                <li><a href="{{ url_for('search') }}">Search</a></li>
+                <li><a href="{{ url_for('profile', username = session.user) }}">Profile</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+                <li><a href="{{ url_for('login') }}">Log In</a></li>
+                <li><a href="{{ url_for('search') }}">Search</a></li>
+                {% endif %}
+        </ul>
     </header>
-    
+
+    <main>
         {% block content %}
         {% endblock %}
-    
+    </main>
+
+    <footer id="footer" class="page-footer">
+        <p id="copyright">© 2019 2BN Savoury Sensations</p>
+        <div class="container social-icons">
+            <a href="https://github.com/10xOXR" target="_blank"><i class="fab fa-github-square"></i></a>
+            <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-square"></i></i></a>
+            <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></i></a>
+        </div>
+    </footer>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>

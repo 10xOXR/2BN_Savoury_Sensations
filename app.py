@@ -1,4 +1,5 @@
 import os
+import random
 from flask import Flask, render_template, redirect, request, url_for, flash, Markup, session
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
@@ -189,16 +190,21 @@ def signup():
                         flash("Passwords should be 5 - 15 characters long.")
                         return render_template("signup.html")
 
+                shapes = ["squares/", "isogrids/", "spaceinvaders/", "labs/isogrids/hexa/", "labs/isogrids/hexa16/"]
+                theme = ["frogideas", "sugarsweets", "heatwave", "daisygarden", "seascape", "summerwarmth", "duskfalling", "berrypie"]
+                user_image = "https://www.tinygraphs.com/" + random.choice(shapes) + request.form.get("username") + "?theme=" + random.choice(theme) + "&numcolors=4&size=220&fmt=svg"
+                
                 user = {
                         "username": request.form.get("username"),
                         "username_lower": request.form.get("username").lower(),
                         "password": generate_password_hash(request.form.get("password")),
+                        "user_img": user_image,
                         "user_recipes": [],
                         "user_favs": []
                 }
                 coll_users.insert_one(user)
                 session["user"] = request.form.get("username").lower()
-                return redirect(url_for("show_recipes"))
+                return redirect(url_for("profile", username = session["user"]))
 
         return render_template("signup.html")
 
@@ -210,7 +216,7 @@ def login():
                 if registered_user:
                         if check_password_hash(registered_user["password"], request.form.get("password")):
                                 session["user"] = request.form.get("username").lower()
-                                return redirect(url_for("show_recipes"))
+                                return redirect(url_for("profile", username = session["user"]))
                         else:
                                 flash("Incorrect Username or Password")
                                 return render_template("login.html")
@@ -223,7 +229,9 @@ def login():
 #User Profile Page
 @app.route("/profile/<username>")
 def profile(username):
-        return render_template("profile.html")
+        user_img = coll_users.find_one({"username_lower": username})["user_img"]
+        user = coll_users.find_one({"username_lower": username})["username"]
+        return render_template("profile.html", image = user_img, username = user)
 
 # User Logout
 @app.route("/logout")
