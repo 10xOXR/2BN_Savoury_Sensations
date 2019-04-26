@@ -42,6 +42,5 @@ requests-unixsocket==0.1.5
 SecretStorage==2.3.1
 six==1.11.0
 text-unidecode==1.2
-ufw==0.35
 urllib3>=1.24.2
 Werkzeug==0.14.1
