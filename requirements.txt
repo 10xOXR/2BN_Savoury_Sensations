@@ -3,7 +3,6 @@ blinker==1.4
 certifi==2018.1.18
 chardet==3.0.4
 Click==7.0
-cloud-init==18.5
 command-not-found==0.3
 configobj==5.0.6
 cryptography>=2.3
