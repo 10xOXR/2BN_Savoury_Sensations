@@ -39,10 +39,23 @@ nav {
     position: fixed;
     top: 0px;    
     z-index: 10;
+    background-color: #0E5F76;
 }
 
-nav .brand-logo {
-    font-size: 1.5rem;
+nav img {
+    width: 5em;
+}
+
+#nav-mobile a {
+    color: #FCE38A;
+}
+
+ul#mobile-demo {
+    background-color: #0E5F76;
+}
+
+.sidenav li a {
+    color: #FCE38A;
 }
 
 .container-nav {
@@ -76,11 +89,13 @@ main {
     bottom: 0px;
     z-index: 10;
     padding: 0px;
+    background-color: #0E5F76;
+    color: #FCE38A;
 }
 
 #footer a {
     text-decoration: none;
-    color: #fff;
+    color: #FCE38A;
 }
 
 #footer p {
