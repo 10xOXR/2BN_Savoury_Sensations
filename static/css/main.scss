@@ -4,6 +4,10 @@ body {
     flex-direction: column;
 }
 
+i {
+    vertical-align: center;
+}
+
 .card {
     border-radius: 20px;
 }
@@ -71,6 +75,14 @@ main {
 .container-main {
     width: 90vw;
     margin: auto;
+}
+
+.pagination li.active {
+    background-color: #0E5F76;
+}
+
+.pagination li.active a {
+    color: #FCE38A;
 }
 
 .social-icons {

@@ -4,7 +4,7 @@
 <div class="container-main">
     <h3>Search Recipes</h3>
     <div class="row">
-        <form action="{{ url_for('search_recipes') }}" method="POST" class="col s12">
+        <form id="search" action="{{ url_for('search_recipes', skip=0) }}" method="POST" class="col s12">
             <div class="row">
                 <div class="input-field col s12">
                     <i class="fas fa-file-alt prefix"></i>
@@ -61,9 +61,27 @@
                     <i class="fas fa-search left"></i>
                 </button>
             </div>
+            <ul class="pagination right">
+                {% if skips %}
+                    <li>Page:&nbsp;</li>
+                    {% for skip in skips %}
+                        <li {% if skip|string in request.path %} class="active" {% endif %} class="waves-effect"><a href="#"
+                                class="pageskip" data-action="{{ url_for('search_recipes', skip=skip) }}">{{ loop.index }}</a>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                <li></li>
+                {% endif %}
+            </ul>
+
         </form>
 
         <div class="row">
+            {% if results_count %}
+            <h5>Results: Showing {{ skip + 1 }} - {{ count }} of {{ results_count }} matches.</h5>
+            {% else %}
+            <h5></h5>
+            {% endif %}
             {% for recipe in recipes %}
             <div class="col s12 m6 l3">
                 <div class="card hoverable sticky-action">
@@ -87,6 +105,7 @@
                 </div>
             </div>
             {% endfor %}
+
         </div>
     </div>
     {% endblock %}

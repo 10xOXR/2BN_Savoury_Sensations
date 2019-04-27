@@ -1,5 +1,6 @@
 import os
 import random
+import math
 from flask import Flask, render_template, redirect, request, url_for, flash, Markup, session
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
@@ -42,12 +43,92 @@ def dropdowns(list1, list2, list3):
 
 # Routes
 
+# User Sign-up
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+        if request.method == "POST":
+                registered_user = coll_users.find_one({"username_lower": request.form.get("username").lower()})
+                if registered_user:
+                        flash(f"Sorry, but {request.form.get('username')} has already been taken.")
+                        return render_template("signup.html")
+
+                if len(request.form.get("username")) < 5 or len(request.form.get("username")) > 15:
+                        flash("Usernames should be 5 - 15 characters long.")
+                        return render_template("signup.html")
+
+                if len(request.form.get("password")) < 5 or len(request.form.get("password")) > 15:
+                        flash("Passwords should be 5 - 15 characters long.")
+                        return render_template("signup.html")
+
+                shapes = ["squares/", "isogrids/", "spaceinvaders/", "labs/isogrids/hexa/", "labs/isogrids/hexa16/"]
+                theme = ["frogideas", "sugarsweets", "heatwave", "daisygarden", "seascape", "summerwarmth", "duskfalling", "berrypie"]
+                user_image = "https://www.tinygraphs.com/" + random.choice(shapes) + request.form.get("username") + "?theme=" + random.choice(theme) + "&numcolors=4&size=220&fmt=svg"
+                
+                user = {
+                        "username": request.form.get("username"),
+                        "username_lower": request.form.get("username").lower(),
+                        "password": generate_password_hash(request.form.get("password")),
+                        "user_img": user_image,
+                        "user_recipes": [],
+                        "user_favs": []
+                }
+                coll_users.insert_one(user)
+                session["user"] = request.form.get("username").lower()
+                return redirect(url_for("profile", username = session["user"]))
+
+        return render_template("signup.html")
+
+#User Login
+@app.route("/login", methods=["GET", "POST"])
+def login():
+        if request.method == "POST":
+                registered_user = coll_users.find_one({"username_lower": request.form.get("username").lower()})
+                if registered_user:
+                        if check_password_hash(registered_user["password"], request.form.get("password")):
+                                session["user"] = request.form.get("username").lower()
+                                return redirect(url_for("profile", username = session["user"]))
+                        else:
+                                flash("Incorrect Username or Password")
+                                return render_template("login.html")
+                else:
+                        flash("Incorrect Username or Password")
+                        return render_template("login.html")
+
+        return render_template("login.html")
+
+#User Profile Page
+@app.route("/profile/<username>")
+def profile(username):
+        user_img = coll_users.find_one({"username_lower": username})["user_img"]
+        user = coll_users.find_one({"username_lower": username})["username"]
+        return render_template("profile.html", image = user_img, username = user)
+
+# User Logout
+@app.route("/logout")
+def logout():
+        session.pop("user")
+        return redirect(url_for("show_recipes"))
+
 @app.route("/")
-@app.route("/show_recipes")
-def show_recipes():
-        alpha_sort = coll_recipes.find().sort( [("views", -1)] )
+@app.route("/show_recipes/skip:<skip>")
+def show_recipes(skip = 0):
+
+        skips = []
+
+        sort = coll_recipes.find().skip(int(skip)).limit(8).sort( [("views", -1)] )
+
+        page_count = range(0, math.ceil(sort.count() / 8))
+        for page in page_count:
+                offset = page * 8
+                skips.append(offset)
+
+        if (int(skip) + 8) < sort.count():
+                count = int(skip) + 8
+        else:
+                count = sort.count()
+
         total_recipes = coll_recipes.count()
-        return render_template("showrecipes.html", recipes = alpha_sort, total_recipes = total_recipes)
+        return render_template("showrecipes.html", recipes = sort, total_recipes = total_recipes, count = count, skips = skips)
 
 @app.route("/add_recipe")
 def add_recipe():
@@ -59,7 +140,7 @@ def add_recipe():
 
 @app.route("/insert_recipe", methods=["POST"])
 def insert_recipe():
-        author = coll_users.find_one({"username": session["user"]})["_id"]
+        author = coll_users.find_one({"username_lower": session["user"]})["_id"]
         ingredients = request.form.get("ingredients").splitlines()
         prepSteps = request.form.get("prepSteps").splitlines()
         submission = {
@@ -138,17 +219,23 @@ def search():
         return render_template("searchrecipes.html", cuisine = sorted(cuisine), course = course, 
                                 allergens = allergens)
 
-@app.route("/search_recipes", methods=["POST"])
-def search_recipes():
+@app.route("/search_recipes/skip:<skip>", methods=["GET", "POST"])
+def search_recipes(skip):
         cuisine = []
         course = []
         allergens = []
-        keywords = request.form.get("search_keys").split()
+        keywords = ""
         cuisineFilter = ""
         courseFilter = ""
         allergenFilter = ""
+        skips = []
 
         dropdowns(cuisine, course, allergens)
+
+        if request.form.get("search_keys") == None:
+                keywords = ""
+        else:
+                keywords = request.form.get("search_keys").split()
 
         if request.form.get("cuisineFilter") == None:
                 cuisineFilter = ""
@@ -166,78 +253,24 @@ def search_recipes():
                 allergenFilter = request.form.getlist("allergenFilter")
 
         search = '"' + '" "'.join(keywords) + '" "' + ''.join(cuisineFilter) + '" "' + ''.join(courseFilter) + '"' + ' -' + ' -'.join(allergenFilter)
-        print(search)
-        search_results = coll_recipes.find({"$text": {"$search": search}}).sort( [("views", -1)])
+        search_results = coll_recipes.find({"$text": {"$search": search}}).skip(int(skip)).limit(8).sort( [("views", -1)])
+
+        results_count = search_results.count()
+
+        page_count = range(0, math.ceil(search_results.count() / 8))
+        for page in page_count:
+                offset = page * 8
+                skips.append(offset)
+
+        if (int(skip) + 8) < results_count:
+                count = int(skip) + 8
+        else:
+                count = results_count
 
         return render_template("searchrecipes.html", recipes = search_results, cuisine = sorted(cuisine), course = course, 
                                 allergens = allergens, f_cuisine = request.form.get("cuisineFilter"),
-                                f_course = request.form.get("courseFilter"), f_allergen = allergenFilter)
-
-# User Sign-up
-@app.route("/signup", methods=["GET", "POST"])
-def signup():
-        if request.method == "POST":
-                registered_user = coll_users.find_one({"username_lower": request.form.get("username").lower()})
-                if registered_user:
-                        flash(f"Sorry, but {request.form.get('username')} has already been taken.")
-                        return render_template("signup.html")
-
-                if len(request.form.get("username")) < 5 or len(request.form.get("username")) > 15:
-                        flash("Usernames should be 5 - 15 characters long.")
-                        return render_template("signup.html")
-
-                if len(request.form.get("password")) < 5 or len(request.form.get("password")) > 15:
-                        flash("Passwords should be 5 - 15 characters long.")
-                        return render_template("signup.html")
-
-                shapes = ["squares/", "isogrids/", "spaceinvaders/", "labs/isogrids/hexa/", "labs/isogrids/hexa16/"]
-                theme = ["frogideas", "sugarsweets", "heatwave", "daisygarden", "seascape", "summerwarmth", "duskfalling", "berrypie"]
-                user_image = "https://www.tinygraphs.com/" + random.choice(shapes) + request.form.get("username") + "?theme=" + random.choice(theme) + "&numcolors=4&size=220&fmt=svg"
-                
-                user = {
-                        "username": request.form.get("username"),
-                        "username_lower": request.form.get("username").lower(),
-                        "password": generate_password_hash(request.form.get("password")),
-                        "user_img": user_image,
-                        "user_recipes": [],
-                        "user_favs": []
-                }
-                coll_users.insert_one(user)
-                session["user"] = request.form.get("username").lower()
-                return redirect(url_for("profile", username = session["user"]))
-
-        return render_template("signup.html")
-
-#User Login
-@app.route("/login", methods=["GET", "POST"])
-def login():
-        if request.method == "POST":
-                registered_user = coll_users.find_one({"username_lower": request.form.get("username").lower()})
-                if registered_user:
-                        if check_password_hash(registered_user["password"], request.form.get("password")):
-                                session["user"] = request.form.get("username").lower()
-                                return redirect(url_for("profile", username = session["user"]))
-                        else:
-                                flash("Incorrect Username or Password")
-                                return render_template("login.html")
-                else:
-                        flash("Incorrect Username or Password")
-                        return render_template("login.html")
-
-        return render_template("login.html")
-
-#User Profile Page
-@app.route("/profile/<username>")
-def profile(username):
-        user_img = coll_users.find_one({"username_lower": username})["user_img"]
-        user = coll_users.find_one({"username_lower": username})["username"]
-        return render_template("profile.html", image = user_img, username = user)
-
-# User Logout
-@app.route("/logout")
-def logout():
-        session.pop("user")
-        return redirect(url_for("show_recipes"))
+                                f_course = request.form.get("courseFilter"), f_allergen = allergenFilter, skips = skips,
+                                results_count = results_count, count = count, skip = int(skip))
 
 if __name__ == "__main__":
         app.run(host=os.environ.get("IP"),
