@@ -4,7 +4,11 @@
 <div class="container-main">
     <h3>All Recipes</h3>
 
-    <h5>Total Recipes: {{ total_recipes }}</h5>
+    {% if total_recipes|string %}
+        <h5>Showing {{ skip + 1 }} - {{ count }} of {{ total_recipes }} recipes.</h5>
+    {% else %}
+        <h5></h5>
+    {% endif %}
     <div class="row">
         {% for recipe in recipes %}
         <div class="col s12 m6 l3">

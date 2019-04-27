@@ -128,7 +128,8 @@ def show_recipes(skip = 0):
                 count = sort.count()
 
         total_recipes = coll_recipes.count()
-        return render_template("showrecipes.html", recipes = sort, total_recipes = total_recipes, count = count, skips = skips)
+        return render_template("showrecipes.html", recipes = sort, total_recipes = total_recipes, count = count, skip = int(skip),
+                                skips = skips)
 
 @app.route("/add_recipe")
 def add_recipe():
