@@ -35,24 +35,30 @@
     </div>
     {% if session.user == author|lower %}
     <div class="col s3">
-        <a class="waves-effect waves-light btn" href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit
-            Recipe</a>
+        {% if recipe._id in favourites %}
+        <a class="waves-effect waves-light btn disabled" href="{{ url_for('add_favourite', recipe_id=recipe._id) }}">Add Favourite</a>
+        {% else %}
+        <a class="waves-effect waves-light btn" href="{{ url_for('add_favourite', recipe_id=recipe._id) }}">Add Favourite</a>
+        {% endif %}
     </div>
     <div class="col s3">
-        <a class="waves-effect waves-light red btn modal-trigger" href="#modal-delete">Delete Recipe</a>
+        <a class="waves-effect waves-light btn" href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit</a>
+    </div>
+    <div class="col s3">
+        <a class="waves-effect waves-light red btn modal-trigger" href="#modal-delete">Delete</a>
     </div>
     {% endif %}
 </div>
 <div class="row">
     <div class="col s12 m4 l3">
         <h5>Ingredients</h5>
-        <ol>
+        <ul>
             {% for ing in recipe.ingredients %}
             <li>
-                <p>{{ ing }}</p>
+                <p>&#9658; {{ ing }}</p>
             </li>
             {% endfor %}
-        </ol>
+        </ul>
     </div>
     <div class="col s12 m8 l5">
         <h5>Preparation Steps</h5>

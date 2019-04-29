@@ -43,7 +43,7 @@ def dropdowns(list1, list2, list3):
 
 # Routes
 
-# User Sign-up
+# User Sign-up Page
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
         if request.method == "POST":
@@ -78,7 +78,7 @@ def signup():
 
         return render_template("signup.html")
 
-#User Login
+#User Login Page
 @app.route("/login", methods=["GET", "POST"])
 def login():
         if request.method == "POST":
@@ -101,7 +101,9 @@ def login():
 def profile(username):
         user_img = coll_users.find_one({"username_lower": username})["user_img"]
         user = coll_users.find_one({"username_lower": username})["username"]
-        return render_template("profile.html", image = user_img, username = user)
+        favs = coll_users.find_one({"username_lower": username})["user_favs"]
+        fav_rec = coll_recipes.find({"_id": { "$in" : favs}})
+        return render_template("profile.html", image = user_img, username = user, favs = fav_rec)
 
 # User Logout
 @app.route("/logout")
@@ -109,6 +111,8 @@ def logout():
         session.pop("user")
         return redirect(url_for("show_recipes"))
 
+
+# Show All Recipes Page
 @app.route("/")
 @app.route("/show_recipes/skip:<skip>")
 def show_recipes(skip = 0):
@@ -131,6 +135,7 @@ def show_recipes(skip = 0):
         return render_template("showrecipes.html", recipes = sort, total_recipes = total_recipes, count = count, skip = int(skip),
                                 skips = skips)
 
+# Add Recipe Page
 @app.route("/add_recipe")
 def add_recipe():
         cuisine = []
@@ -139,6 +144,7 @@ def add_recipe():
         dropdowns(cuisine, course, allergens)
         return render_template("addrecipe.html", cuisine = sorted(cuisine), course = course, allergens = allergens)
 
+# Add Recipe - Insert Recipe Function
 @app.route("/insert_recipe", methods=["POST"])
 def insert_recipe():
         author = coll_users.find_one({"username_lower": session["user"]})["_id"]
@@ -157,19 +163,32 @@ def insert_recipe():
                 "allergens": request.form.getlist("allergens"),
                 "imgUrl": request.form.get("imageUrl"),
                 "author": author,
-                "views": 0
+                "views": 0,
+                "favourites": 0
         }
         insertRecipe = coll_recipes.insert_one(submission)
+        coll_users.update_one({"_id": ObjectId(author)}, {"$push": {"user_recipes": insertRecipe.inserted_id}})
         flash("Thank you! Your recipe has been submitted!")
         return redirect(url_for("recipe_detail", recipe_id = insertRecipe.inserted_id))
 
+# Recipe Detail Page
 @app.route("/recipe_detail/<recipe_id>")
 def recipe_detail(recipe_id):
         recipe_name = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
         author = coll_users.find_one({"_id": ObjectId(recipe_name.get("author"))})["username"]
+        favourite = coll_users.find_one({"_id": ObjectId(recipe_name.get("author"))})["user_favs"]
         coll_recipes.update({"_id": ObjectId(recipe_id)}, {"$inc": {"views": 1}})
-        return render_template("recipedetail.html", recipe = recipe_name, author = author)
+        return render_template("recipedetail.html", recipe = recipe_name, author = author, favourites = favourite)
 
+# Add Favourite Function
+@app.route("/add_favourite/<recipe_id>")
+def add_favourite(recipe_id):
+        user = coll_users.find_one({"username_lower": session["user"]})["_id"]
+        coll_users.update_one({"_id": ObjectId(user)}, {"$push": {"user_favs": ObjectId(recipe_id)}})
+        coll_recipes.update({"_id": ObjectId(recipe_id)}, {"$inc": {"favourites": 1}})
+        return redirect(url_for("recipe_detail", recipe_id = recipe_id))
+
+# Update Recipe Page
 @app.route("/update_recipe/<recipe_id>")
 def update_recipe(recipe_id):
         cuisine = []
@@ -181,6 +200,7 @@ def update_recipe(recipe_id):
         return render_template("updaterecipe.html", selected_recipe = selected_recipe, cuisine = sorted(cuisine), 
                                 course = course, allergens = allergens, steps = steps)
 
+# Update Recipe - Insert Update Function
 @app.route("/insert_update/<recipe_id>", methods=["POST"])
 def insert_update(recipe_id):
         recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
@@ -188,7 +208,8 @@ def insert_update(recipe_id):
         prepSteps = request.form.get("prepSteps").splitlines()
         author = recipe.get("author")
         currentViews = recipe.get("views")
-        coll_recipes.update({"_id": ObjectId(recipe_id)}, {
+        currentFavs = recipe.get("favourites")
+        coll_recipes.update_one({"_id": ObjectId(recipe_id)}, {
                 "cuisineType": request.form.get("cuisineType"),
                 "courseType": request.form.get("courseType"),
                 "recipeName": request.form.get("recipe_name"),
@@ -201,27 +222,23 @@ def insert_update(recipe_id):
                 "allergens": request.form.getlist("allergens"),
                 "imgUrl": request.form.get("imageUrl"),
                 "author": author,
-                "views": currentViews
+                "views": currentViews,
+                "favourites": currentFavs
         })
         flash("Thank you! Your update has been submitted!")
         return redirect(url_for("recipe_detail", recipe_id = recipe_id))
 
+# Delete Recipe Function
 @app.route("/delete_recipe/<recipe_id>")
 def delete_recipe(recipe_id):
+        user = coll_users.find_one({"username_lower": session["user"]})["_id"]
         coll_recipes.remove({"_id": ObjectId(recipe_id)})
+        coll_users.update_one({"_id": ObjectId(user)}, {"$pull": {"user_recipes": ObjectId(recipe_id)}})
         return redirect(url_for("show_recipes"))
 
-@app.route("/search")
-def search():
-        cuisine = []
-        course = []
-        allergens = []
-        dropdowns(cuisine, course, allergens)
-        return render_template("searchrecipes.html", cuisine = sorted(cuisine), course = course, 
-                                allergens = allergens)
-
+# Search Page
 @app.route("/search_recipes/skip:<skip>", methods=["GET", "POST"])
-def search_recipes(skip):
+def search_recipes(skip = 0):
         cuisine = []
         course = []
         allergens = []

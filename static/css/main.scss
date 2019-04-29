@@ -2,6 +2,7 @@ body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
+    position: relative;
 }
 
 i {
@@ -41,7 +42,7 @@ i {
 
 nav {
     position: fixed;
-    top: 0px;    
+    top: 0px;
     z-index: 10;
     background-color: #0E5F76;
 }

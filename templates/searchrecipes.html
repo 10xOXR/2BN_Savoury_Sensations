@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container-main">
+<div class="card container-main">
     <h3>Search Recipes</h3>
     <div class="row">
         <form id="search" action="{{ url_for('search_recipes', skip=0) }}" method="POST" class="col s12">

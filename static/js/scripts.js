@@ -1,10 +1,12 @@
 $(document).ready(function () {
-
-    $('.materialboxed').materialbox();
-    $('select').formSelect();
+    
     $('.collapsible').collapsible();
     $('.modal').modal();
     $('.sidenav').sidenav();
+
+    $('select').formSelect();
+    $(".dropdown-trigger").dropdown();
+    $("select[required]").css({display: "block", height: 0, padding: 0, width: 0, position: 'absolute'});
 
     $('form .pageskip').on({
         click: function (event) {
