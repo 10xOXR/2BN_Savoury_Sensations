@@ -1,6 +1,7 @@
 import os
 import random
 import math
+import js2py
 from flask import Flask, render_template, redirect, request, url_for, flash, Markup, session
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
@@ -60,6 +61,7 @@ def signup():
                         flash("Passwords should be 5 - 15 characters long.")
                         return render_template("signup.html")
 
+                # Generates a profile picture based on entered username, inserting randomised URL choices
                 shapes = ["squares/", "isogrids/", "spaceinvaders/", "labs/isogrids/hexa/", "labs/isogrids/hexa16/"]
                 theme = ["frogideas", "sugarsweets", "heatwave", "daisygarden", "seascape", "summerwarmth", "duskfalling", "berrypie"]
                 user_image = "https://www.tinygraphs.com/" + random.choice(shapes) + request.form.get("username") + "?theme=" + random.choice(theme) + "&numcolors=4&size=220&fmt=svg"
@@ -72,7 +74,13 @@ def signup():
                         "user_recipes": [],
                         "user_favs": []
                 }
-                coll_users.insert_one(user)
+
+                if request.form.get("password") == request.form.get("password-check"):
+                        coll_users.insert_one(user)
+                else:
+                        flash("Supplied passwords do not match.")
+                        return render_template("signup.html")
+                
                 session["user"] = request.form.get("username").lower()
                 return redirect(url_for("profile", username = session["user"]))
 
@@ -102,8 +110,31 @@ def profile(username):
         user_img = coll_users.find_one({"username_lower": username})["user_img"]
         user = coll_users.find_one({"username_lower": username})["username"]
         favs = coll_users.find_one({"username_lower": username})["user_favs"]
-        fav_rec = coll_recipes.find({"_id": { "$in" : favs}})
-        return render_template("profile.html", image = user_img, username = user, favs = fav_rec)
+        own_recipes = coll_users.find_one({"username_lower": username})["user_recipes"]
+        fav_rec = coll_recipes.find({"_id": {"$in": favs}}).sort( [("views", -1)] )
+        own_rec = coll_recipes.find({"_id": {"$in": own_recipes}}).sort( [("views", -1)] )
+        return render_template("profile.html", image = user_img, username = user, favs = fav_rec, own_rec = own_rec)
+
+# Change Password
+@app.route("/change-password/<username>", methods=["GET", "POST"])
+def change_password(username):
+        if request.method == "POST":
+                if check_password_hash(coll_users.find_one({"username_lower": username})["password"], request.form.get("old-password")):
+                        if len(request.form.get("new-password")) < 5 or len(request.form.get("new-password")) > 15:
+                                flash("Passwords should be 5 - 15 characters long.")
+                                return redirect(url_for("change_password", username = session["user"]))
+                        if request.form.get("new-password") == request.form.get("password-check"):
+                                coll_users.update_one({"username_lower": username}, {"$set": {"password": generate_password_hash(request.form.get("new-password"))}})
+                        else:
+                                flash("New passwords do not match!")
+                                return redirect(url_for("change_password", username = session["user"]))
+                else:
+                        flash("Original password is incorrect!")
+                        return redirect(url_for("change_password", username = session["user"]))
+                flash("Your password was updated successfully!")
+                return redirect(url_for("profile", username = session["user"]))
+
+        return render_template("changepassword.html", username = session["user"])
 
 # User Logout
 @app.route("/logout")
@@ -118,7 +149,6 @@ def logout():
 def show_recipes(skip = 0):
 
         skips = []
-
         sort = coll_recipes.find().skip(int(skip)).limit(8).sort( [("views", -1)] )
 
         page_count = range(0, math.ceil(sort.count() / 8))
@@ -132,6 +162,7 @@ def show_recipes(skip = 0):
                 count = sort.count()
 
         total_recipes = coll_recipes.count()
+        
         return render_template("showrecipes.html", recipes = sort, total_recipes = total_recipes, count = count, skip = int(skip),
                                 skips = skips)
 
@@ -176,7 +207,12 @@ def insert_recipe():
 def recipe_detail(recipe_id):
         recipe_name = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
         author = coll_users.find_one({"_id": ObjectId(recipe_name.get("author"))})["username"]
-        favourite = coll_users.find_one({"_id": ObjectId(recipe_name.get("author"))})["user_favs"]
+
+        try:
+                favourite = coll_users.find_one({"username_lower": session["user"]})["user_favs"]
+        except:
+                favourite = []
+                
         coll_recipes.update({"_id": ObjectId(recipe_id)}, {"$inc": {"views": 1}})
         return render_template("recipedetail.html", recipe = recipe_name, author = author, favourites = favourite)
 

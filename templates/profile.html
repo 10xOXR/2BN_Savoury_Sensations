@@ -1,9 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
 
+<h5>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</h5>
+
 <div class="container-main">
     <h3>Profile: {{ username }}</h3>
     <img src="{{ image }}" alt="">
 </div>
-
+<div class="col s3">
+    <a class="waves-effect waves-light btn modal-trigger"
+        href="{{ url_for('change_password', username = session.user) }}">Change Password</a>
+</div>
+<div class="card row">
+    <div class="col s12">
+        <ul class="tabs">
+            <li class="tab tabs-fixed-width col s6"><a class="active" href="#favs">Favourites</a></li>
+            <li class="tab tabs-fixed-width col s6"><a href="#ownRecipes">My Recipes</a></li>
+        </ul>
+    </div>
+    <div id="favs" class="row">
+        {% for recipe in favs %}
+        {% include "partials/_cards.html" %}
+        {% endfor %}
+    </div>
+    <div id="ownRecipes" class="row">
+        {% for recipe in own_rec %}
+        {% include "partials/_cards.html" %}
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

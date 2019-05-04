@@ -83,27 +83,7 @@
             <h5></h5>
             {% endif %}
             {% for recipe in recipes %}
-            <div class="col s12 m6 l3">
-                <div class="card hoverable sticky-action">
-                    <div class="card-image waves-effect waves-block waves-light">
-                        {% if recipe.imgUrl %}
-                        <img class="activator" src="{{ recipe.imgUrl }}">
-                        {% else %}
-                        <img class="activator" src="{{ url_for('static', filename='img/no_img.jpg') }}">
-                        {% endif %}
-                        <span class="card-title">{{ recipe.recipeName }}</span>
-                    </div>
-                    <div class="card-action">
-                        <a href="{{ url_for('recipe_detail', recipe_id=recipe._id) }}">View Recipe</a>
-                        <p>Views: {{ recipe.views }}</p>
-                    </div>
-                    <div class="card-reveal">
-                        <span class="card-title grey-text text-darken-4">{{ recipe.recipeName }}<i
-                                class="material-icons right">close</i></span>
-                        <p>{{ recipe.recipeDesc }}</p>
-                    </div>
-                </div>
-            </div>
+                {% include "partials/_cards.html" %}
             {% endfor %}
 
         </div>

@@ -28,11 +28,15 @@ i {
 
 .card-action {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    text-align: center;
     justify-items: center;
     align-items: center;
     border-bottom-right-radius: 20px;
     border-bottom-left-radius: 20px;
+}
+.card .card-action a:not(.btn):not(.btn-large):not(.btn-small):not(.btn-large):not(.btn-floating) {
+    margin-right: 0;
 }
 
 .pagination li {
