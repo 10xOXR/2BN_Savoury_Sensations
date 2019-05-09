@@ -18,6 +18,7 @@
                     <i class="fas fa-pepper-hot prefix"></i>
                     <select id="cuisineFilter" name="cuisineFilter">
                         <option value="" disabled selected>Filter by Cuisine</option>
+                        <option value=""></option>
                         {% for item in cuisine %}
                         {% if item == f_cuisine %}
                         <option value="{{ item }}" selected>{{ item }}</option>
@@ -32,6 +33,7 @@
                     <i class="fas fa-utensils prefix"></i>
                     <select id="courseFilter" name="courseFilter">
                         <option value="" disabled selected>Filter by Course</option>
+                        <option value=""></option>
                         {% for item in course %}
                         {% if item == f_course %}
                         <option value="{{ item }}" selected>{{ item }}</option>

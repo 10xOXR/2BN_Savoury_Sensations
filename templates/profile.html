@@ -14,12 +14,12 @@
 <div class="container-main">
     <h3>Profile: {{ username }}</h3>
     <img src="{{ image }}" alt="">
+    <div class="col s3">
+        <a class="waves-effect waves-light btn modal-trigger"
+            href="{{ url_for('change_password', username = session.user) }}">Change Password</a>
+    </div>
 </div>
-<div class="col s3">
-    <a class="waves-effect waves-light btn modal-trigger"
-        href="{{ url_for('change_password', username = session.user) }}">Change Password</a>
-</div>
-<div class="card row">
+<div class="card row container-main">
     <div class="col s12">
         <ul class="tabs">
             <li class="tab tabs-fixed-width col s6"><a class="active" href="#favs">Favourites</a></li>

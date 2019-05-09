@@ -5,7 +5,6 @@ from flask import Flask, render_template, redirect, request, url_for, flash, Mar
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from werkzeug.security import check_password_hash, generate_password_hash
-from slugify import slugify
 
 app = Flask(__name__)
 
@@ -43,6 +42,12 @@ def dropdowns(list1, list2, list3):
 
 # Routes
 
+# Landing Page
+@app.route("/home")
+def landing_page():
+        slideshow = [recipe for recipe in coll_recipes.aggregate([{"$sample": {"size": 5}}])]
+        return render_template("landing.html", slideshow = slideshow)
+
 # User Sign-up Page
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -60,6 +65,10 @@ def signup():
                         flash("Passwords should be 5 - 15 characters long.")
                         return render_template("signup.html")
 
+                if request.form.get("password") != request.form.get("password-check"):
+                        flash("Supplied passwords do not match.")
+                        return render_template("signup.html")
+
                 # Generates a profile picture based on entered username, inserting randomised URL choices
                 shapes = ["squares/", "isogrids/", "spaceinvaders/", "labs/isogrids/hexa/", "labs/isogrids/hexa16/"]
                 theme = ["frogideas", "sugarsweets", "heatwave", "daisygarden", "seascape", "summerwarmth", "duskfalling", "berrypie"]
@@ -73,13 +82,7 @@ def signup():
                         "user_recipes": [],
                         "user_favs": []
                 }
-
-                if request.form.get("password") == request.form.get("password-check"):
-                        coll_users.insert_one(user)
-                else:
-                        flash("Supplied passwords do not match.")
-                        return render_template("signup.html")
-                
+                coll_users.insert_one(user)
                 session["user"] = request.form.get("username").lower()
                 return redirect(url_for("profile", username = session["user"]))
 
@@ -148,8 +151,9 @@ def logout():
 def show_recipes(skip = 0):
 
         skips = []
-        sort = coll_recipes.find().skip(int(skip)).limit(8).sort( [("views", -1)] )
-
+        sort_type = request.args.get(str("sort")) or "views"
+        order_type = int(request.args.get("order")) if request.args.get("order") else -1
+        sort = coll_recipes.find().skip(int(skip)).limit(8).sort( [(sort_type, order_type)] )
         page_count = range(0, math.ceil(sort.count() / 8))
         for page in page_count:
                 offset = page * 8
@@ -159,7 +163,6 @@ def show_recipes(skip = 0):
                 count = int(skip) + 8
         else:
                 count = sort.count()
-
         total_recipes = coll_recipes.count()
         
         return render_template("showrecipes.html", recipes = sort, total_recipes = total_recipes, count = count, skip = int(skip),
@@ -293,12 +296,12 @@ def search_recipes(skip = 0):
         if request.form.get("cuisineFilter") == None:
                 cuisineFilter = ""
         else:
-                cuisineFilter = request.form.get("cuisineFilter").split()
+                cuisineFilter = request.form.get("cuisineFilter")
         
         if request.form.get("courseFilter") == None:
                 courseFilter = ""
         else:
-                courseFilter = request.form.get("courseFilter").split()
+                courseFilter = request.form.get("courseFilter")
         
         if request.form.get("allergenFilter") == None:
                 allergenFilter = ""
@@ -307,23 +310,20 @@ def search_recipes(skip = 0):
 
         search = '"' + '" "'.join(keywords) + '" "' + ''.join(cuisineFilter) + '" "' + ''.join(courseFilter) + '"' + ' -' + ' -'.join(allergenFilter)
         search_results = coll_recipes.find({"$text": {"$search": search}}).skip(int(skip)).limit(8).sort( [("views", -1)])
-
-        results_count = search_results.count()
-
         page_count = range(0, math.ceil(search_results.count() / 8))
         for page in page_count:
                 offset = page * 8
                 skips.append(offset)
 
-        if (int(skip) + 8) < results_count:
+        if (int(skip) + 8) < search_results.count():
                 count = int(skip) + 8
         else:
-                count = results_count
+                count = search_results.count()
 
         return render_template("searchrecipes.html", recipes = search_results, cuisine = sorted(cuisine), course = course, 
                                 allergens = allergens, f_cuisine = request.form.get("cuisineFilter"),
                                 f_course = request.form.get("courseFilter"), f_allergen = allergenFilter, skips = skips,
-                                results_count = results_count, count = count, skip = int(skip))
+                                results_count = search_results.count(), count = count, skip = int(skip))
 
 if __name__ == "__main__":
         app.run(host=os.environ.get("IP"),

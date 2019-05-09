@@ -9,6 +9,8 @@
     {% else %}
         <h5></h5>
     {% endif %}
+    <a class="waves-effect waves-light btn"
+            href="{{ url_for('show_recipes', skip=skip, sort='recipeName', order=1) }}">Sort Alphabetically</a>
     <div class="row">
         {% for recipe in recipes %}
             {% include "partials/_cards.html" %}
@@ -18,7 +20,7 @@
             <li>Page:&nbsp;</li>
             {% for skip in skips %}
             <li {% if skip|string in request.path %} class="active" {% endif %} class="waves-effect"><a
-                    href="{{ url_for('show_recipes', skip=skip) }}">{{ loop.index }}</a>
+                    href="{{ url_for('show_recipes', skip=skip, sort=request.args.get('sort'), order=request.args.get('order')) }}">{{ loop.index }}</a>
             </li>
             {% endfor %}
             {% else %}

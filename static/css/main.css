@@ -1,4 +1,7 @@
 body {
+  background-image: url("/static/img/background.png");
+  background-size: cover;
+  background-attachment: fixed;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16,19 +19,21 @@ i {
 
 .card {
   border-radius: 20px;
+  padding: 1em;
 }
 
 .card .card-image img {
   -o-object-fit: cover;
      object-fit: cover;
   height: 35vh;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
 }
 
 .card .card-image .card-title {
   background-color: rgba(255, 255, 255, 0.8);
   color: #000;
+  text-align: center;
+  width: 100%;
+  font-weight: 400;
   padding: 5px;
 }
 
@@ -84,7 +89,6 @@ ul#mobile-demo {
 }
 
 main {
-  padding-top: 45px;
   -webkit-box-flex: 1;
       -ms-flex: 1 0 auto;
           flex: 1 0 auto;
@@ -92,7 +96,7 @@ main {
 
 .container-main {
   width: 90vw;
-  margin: auto;
+  margin: 80px auto;
 }
 
 .pagination li.active {
@@ -110,6 +114,53 @@ main {
   justify-items: end;
   font-size: 2rem;
   text-align: right;
+}
+
+.landing-section {
+  display: -ms-grid;
+  display: grid;
+  height: 50vh;
+  -ms-grid-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "welcome-text recipe-carousel";
+}
+
+.welcome-text {
+  -ms-grid-row: 1;
+  -ms-grid-column: 1;
+  grid-area: welcome-text;
+  margin: auto;
+}
+
+.recipe-carousel {
+  -ms-grid-row: 1;
+  -ms-grid-column: 2;
+  grid-area: recipe-carousel;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+  justify-items: center;
+}
+
+.carousel {
+  border-radius: 1.25em;
+  border: 10px solid #0E5F76;
+}
+
+.carousel .btn {
+  color: #FCE38A;
+  background-color: #0E5F76;
+}
+
+.carousel .carousel-item img {
+  -o-object-fit: cover;
+     object-fit: cover;
+  height: 60vh;
+}
+
+.carousel .carousel-fixed-item {
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 #footer {
@@ -156,6 +207,15 @@ main {
     -o-object-fit: cover;
        object-fit: cover;
     height: 30vh;
+  }
+  .landing-section {
+    margin: 60px 10px 20px 10px;
+    -ms-grid-columns: 1fr;
+        grid-template-columns: 1fr;
+        grid-template-areas: "welcome-text" "recipe-carousel";
+  }
+  .carousel {
+    height: 50vh !important;
   }
   #footer p {
     margin: 14px 0px 10px 10px;
