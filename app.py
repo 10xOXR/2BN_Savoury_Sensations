@@ -142,7 +142,7 @@ def change_password(username):
 @app.route("/logout")
 def logout():
         session.pop("user")
-        return redirect(url_for("show_recipes"))
+        return redirect(url_for("landing_page"))
 
 
 # Show All Recipes Page
@@ -150,19 +150,13 @@ def logout():
 @app.route("/show_recipes/skip:<skip>")
 def show_recipes(skip = 0):
 
-        skips = []
         sort_type = request.args.get(str("sort")) or "views"
         order_type = int(request.args.get("order")) if request.args.get("order") else -1
         sort = coll_recipes.find().skip(int(skip)).limit(8).sort( [(sort_type, order_type)] )
         page_count = range(0, math.ceil(sort.count() / 8))
-        for page in page_count:
-                offset = page * 8
-                skips.append(offset)
+        skips = [page * 8 for page in page_count]
 
-        if (int(skip) + 8) < sort.count():
-                count = int(skip) + 8
-        else:
-                count = sort.count()
+        count = int(skip) + 8 if (int(skip) + 8) < sort.count() else sort.count()
         total_recipes = coll_recipes.count()
         
         return render_template("showrecipes.html", recipes = sort, total_recipes = total_recipes, count = count, skip = int(skip),
@@ -280,45 +274,19 @@ def search_recipes(skip = 0):
         cuisine = []
         course = []
         allergens = []
-        keywords = ""
-        cuisineFilter = ""
-        courseFilter = ""
-        allergenFilter = ""
-        skips = []
-
         dropdowns(cuisine, course, allergens)
 
-        if request.form.get("search_keys") == None:
-                keywords = ""
-        else:
-                keywords = request.form.get("search_keys").split()
-
-        if request.form.get("cuisineFilter") == None:
-                cuisineFilter = ""
-        else:
-                cuisineFilter = request.form.get("cuisineFilter")
+        keywords = request.form.get("search_keys").split() if request.form.get("search_keys") != None else ""
+        cuisineFilter = request.form.get("cuisineFilter") if request.form.get("cuisineFilter") != None else "" 
+        courseFilter = courseFilter = request.form.get("courseFilter") if request.form.get("courseFilter") != None else ""
+        allergenFilter = request.form.getlist("allergenFilter") if request.form.get("allergenFilter") != None else ""
         
-        if request.form.get("courseFilter") == None:
-                courseFilter = ""
-        else:
-                courseFilter = request.form.get("courseFilter")
-        
-        if request.form.get("allergenFilter") == None:
-                allergenFilter = ""
-        else:
-                allergenFilter = request.form.getlist("allergenFilter")
-
         search = '"' + '" "'.join(keywords) + '" "' + ''.join(cuisineFilter) + '" "' + ''.join(courseFilter) + '"' + ' -' + ' -'.join(allergenFilter)
         search_results = coll_recipes.find({"$text": {"$search": search}}).skip(int(skip)).limit(8).sort( [("views", -1)])
+        # Pagination
         page_count = range(0, math.ceil(search_results.count() / 8))
-        for page in page_count:
-                offset = page * 8
-                skips.append(offset)
-
-        if (int(skip) + 8) < search_results.count():
-                count = int(skip) + 8
-        else:
-                count = search_results.count()
+        skips = [page * 8 for page in page_count]
+        count = int(skip) + 8 if (int(skip) + 8) < search_results.count() else search_results.count()
 
         return render_template("searchrecipes.html", recipes = search_results, cuisine = sorted(cuisine), course = course, 
                                 allergens = allergens, f_cuisine = request.form.get("cuisineFilter"),
