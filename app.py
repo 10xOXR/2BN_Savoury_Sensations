@@ -148,20 +148,30 @@ def logout():
 
 # Show All Recipes Page
 @app.route("/")
-@app.route("/show_recipes/skip:<skip>")
-def show_recipes(skip = 0):
+@app.route("/show_recipes")
+def show_recipes():
+        args = request.args.get
 
-        sort_type = request.args.get(str("sort")) or "views"
-        order_type = int(request.args.get("order")) if request.args.get("order") else -1
-        sort = coll_recipes.find().skip(int(skip)).limit(8).sort( [(sort_type, order_type)] )
-        page_count = range(0, math.ceil(sort.count() / 8))
-        skips = [page * 8 for page in page_count]
+        sort_type = args(str("sort")) or "views"
+        page_args = int(args("page")) if args("page") != None else 1
+        order_type = int(args("order")) if args("order") else -1
+        sort = coll_recipes.find().skip((page_args * 8) - 8).limit(8).sort( [(sort_type, order_type)] )
+        page_count = range(1, (math.ceil(sort.count() / 8)) + 1)
+        pages = [page for page in page_count]
+        previous_page = page_args - 1 if page_args != 1 else 1
+        next_page = page_args + 1 if page_args < pages[-1] else page_args
 
-        count = int(skip) + 8 if (int(skip) + 8) < sort.count() else sort.count()
+        count = page_args * 8 if (page_args * 8) < sort.count() else sort.count()
         total_recipes = coll_recipes.count()
         
-        return render_template("showrecipes.html", recipes = sort, total_recipes = total_recipes, count = count, skip = int(skip),
-                                skips = skips)
+        return render_template("showrecipes.html",
+                                recipes = sort,
+                                total_recipes = total_recipes,
+                                count = count,
+                                pages = pages,
+                                page = page_args,
+                                previous_page = previous_page,
+                                next_page = next_page)
 
 # Add Recipe Page
 @app.route("/add_recipe")
@@ -270,29 +280,59 @@ def delete_recipe(recipe_id):
         return redirect(url_for("show_recipes"))
 
 # Search Page
-@app.route("/search_recipes/skip:<skip>", methods=["GET", "POST"])
-def search_recipes(skip = 0):
+@app.route("/search_recipes")
+def search_recipes():
         cuisine = []
         course = []
         allergens = []
         dropdowns(cuisine, course, allergens)
+        args = request.args.get
+        args_list = request.args.getlist
 
-        keywords = request.form.get("search_keys").split() if request.form.get("search_keys") != None else ""
-        cuisineFilter = request.form.get("cuisineFilter") if request.form.get("cuisineFilter") != None else "" 
-        courseFilter = courseFilter = request.form.get("courseFilter") if request.form.get("courseFilter") != None else ""
-        allergenFilter = request.form.getlist("allergenFilter") if request.form.get("allergenFilter") != None else ""
+        # Get Search and Pagination arguments from URL
+        keyword_args = args("search_keys") if args("search_keys") != None else ""
+        cuisineFilter_args = args("cuisine_filter") if args("cuisine_filter") != None else "" 
+        courseFilter_args = args("course_filter") if args("course_filter") != None else ""
+        allergenFilter_args = args_list("allergen_filter") if args_list("allergen_filter") != None else []
+        page_args = int(args("page")) if args("page") != None else 1
+
+        # Set search variables
+        search_keywords = keyword_args.split() if keyword_args != None else ""
+        search_cuisine = cuisineFilter_args if cuisineFilter_args != None else ""
+        search_course = courseFilter_args if courseFilter_args != None else ""
+        search_allergens = allergenFilter_args if allergenFilter_args != [] else ""
         
-        search = '"' + '" "'.join(keywords) + '" "' + ''.join(cuisineFilter) + '" "' + ''.join(courseFilter) + '"' + ' -' + ' -'.join(allergenFilter)
-        search_results = coll_recipes.find({"$text": {"$search": search}}).skip(int(skip)).limit(8).sort( [("views", -1)])
-        # Pagination
-        page_count = range(0, math.ceil(search_results.count() / 8))
-        skips = [page * 8 for page in page_count]
-        count = int(skip) + 8 if (int(skip) + 8) < search_results.count() else search_results.count()
+        # Join search variables and perform search
+        search = '"' + '" "'.join(search_keywords) + '" "' + ''.join(search_cuisine) + '" "' + ''.join(search_course) + '"' + ' -' + ' -'.join(search_allergens)
+        search_results = coll_recipes.find({"$text": {"$search": search}}).skip((page_args * 8) - 8).limit(8).sort( [("views", -1)])
 
-        return render_template("searchrecipes.html", recipes = search_results, cuisine = sorted(cuisine), course = course, 
-                                allergens = allergens, f_cuisine = request.form.get("cuisineFilter"),
-                                f_course = request.form.get("courseFilter"), f_allergen = allergenFilter, skips = skips,
-                                results_count = search_results.count(), count = count, skip = int(skip))
+        # Pagination
+        page_count = range(1, (math.ceil(search_results.count() / 8)) + 1) if search_results.count() != 0 else ""
+        pages = [page for page in page_count] if page_count != "" else []
+        previous_page = page_args - 1 if page_args != 1 else 1
+        if page_count == "" or pages == []:
+                next_page = ""
+        else:
+                next_page = page_args + 1 if page_args < pages[-1] else page_args
+
+        # Running count of displayed recipes on Search Page
+        count = page_args * 8 if (page_args * 8) < search_results.count() else search_results.count()
+
+        return render_template("searchrecipes.html",
+                                recipes = search_results,
+                                cuisine = sorted(cuisine),
+                                course = course, 
+                                allergens = allergens,
+                                keywords = keyword_args,
+                                f_cuisine = cuisineFilter_args,
+                                f_course = courseFilter_args,
+                                f_allergen = allergenFilter_args,
+                                pages = pages,
+                                results_count = search_results.count(),
+                                count = count,
+                                page = page_args,
+                                next_page = next_page,
+                                previous_page = previous_page)
 
 if __name__ == "__main__":
         app.run(host=os.environ.get("IP"),

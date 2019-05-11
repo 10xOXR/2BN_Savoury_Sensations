@@ -1,22 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
 
+{% set args = request.args.get %}
+
 <div class="card container-main">
     <h3>Search Recipes</h3>
     <div class="row">
-        <form id="search" action="{{ url_for('search_recipes', skip=0) }}" method="POST" class="col s12">
+        <!--<form id="search" action="{{ url_for('search_recipes', skip=0) }}" method="POST" class="col s12">-->
+        <form id="search" class="col s12">
             <div class="row">
                 <div class="input-field col s12">
                     <i class="fas fa-file-alt prefix"></i>
                     <input id="search_keys" name="search_keys" type="text" class="validate"
-                        placeholder="Please enter your search terms." value="{{ request.form['search_keys'] }}">
-                    <label for="recipe_name">Keywords</label>
+                        placeholder="Please enter your search terms."
+                        value="{% if keywords %}{{ keywords }}{% endif %}">
+                    <label for="search_keys">Keywords</label>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s12 m4">
                     <i class="fas fa-pepper-hot prefix"></i>
-                    <select id="cuisineFilter" name="cuisineFilter">
+                    <select id="cuisine_filter" name="cuisine_filter">
                         <option value="" disabled selected>Filter by Cuisine</option>
                         <option value=""></option>
                         {% for item in cuisine %}
@@ -27,11 +31,11 @@
                         {% endif %}
                         {% endfor %}
                     </select>
-                    <label for="cuisineFilter">Cuisine Type</label>
+                    <label for="cuisine_filter">Cuisine Type</label>
                 </div>
                 <div class="input-field col s12 m4">
                     <i class="fas fa-utensils prefix"></i>
-                    <select id="courseFilter" name="courseFilter">
+                    <select id="course_filter" name="course_filter">
                         <option value="" disabled selected>Filter by Course</option>
                         <option value=""></option>
                         {% for item in course %}
@@ -42,10 +46,10 @@
                         {% endif %}
                         {% endfor %}
                     </select>
-                    <label for="courseFilter">Course Type</label>
+                    <label for="course_filter">Course Type</label>
                 </div>
                 <div class="input-field col s12 m4">
-                    <select id="allergenFilter" name="allergenFilter" multiple>
+                    <select id="allergen_filter" name="allergen_filter" multiple>
                         <option value="" disabled>Filter out allergens</option>
                         {% for item in allergens %}
                         {% if item in f_allergen %}
@@ -55,24 +59,29 @@
                         {% endif %}
                         {% endfor %}
                     </select>
-                    <label for="allergenFilter">Allergens</label>
+                    <label for="allergen_filter">Allergens</label>
                 </div>
             </div>
             <div class="row">
-                <button class="btn waves-effect waves-light" type="submit" name="action">Search
+                <button class="btn waves-effect waves-light" type="submit">Search
                     <i class="fas fa-search left"></i>
                 </button>
+                &nbsp;
+                <a class="btn waves-effect waves-light" href="{{ url_for('search_recipes') }}"><i
+                        class="fas fa-undo-alt left"></i>Reset</a>
             </div>
+
             <ul class="pagination right">
-                {% if skips %}
-                    <li>Page:&nbsp;</li>
-                    {% for skip in skips %}
-                        <li {% if skip|string in request.path %} class="active" {% endif %} class="waves-effect"><a href="#"
-                                class="pageskip" data-action="{{ url_for('search_recipes', skip=skip) }}">{{ loop.index }}</a>
+                {% if pages %}
+                    <li {% if not request.args or not args('page') or args('page')=='1' %} class="disabled" {% endif %}><a href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=previous_page) }}"><i class="material-icons">chevron_left</i></a></li>
+                    {% for page in pages %}
+                        <li {% if args('page') %}{% if page|string in args('page') %} class="active waves-effect waves-red" {% endif %}{% elif page==1 %} class="active waves-effect waves-red" {% endif %}class="waves-effect"><a
+                            href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=page) }}">{{ loop.index }}</a>
                         </li>
                     {% endfor %}
+                    <li {% if args('page')==pages|length|string %} class="disabled" {% endif %} class="waves-effect"><a href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=next_page) }}"><i class="material-icons">chevron_right</i></a></li>
                 {% else %}
-                <li></li>
+                    <li></li>
                 {% endif %}
             </ul>
 
@@ -80,14 +89,13 @@
 
         <div class="row">
             {% if results_count %}
-            <h5>Results: Showing {{ skip + 1 }} - {{ count }} of {{ results_count }} matches.</h5>
+            <h5>Results: Showing {{ (page * 8) - 7 }} - {{ count }} of {{ results_count }} matches.</h5>
             {% else %}
             <h5></h5>
             {% endif %}
             {% for recipe in recipes %}
-                {% include "partials/_cards.html" %}
+            {% include "partials/_cards.html" %}
             {% endfor %}
-
         </div>
     </div>
     {% endblock %}

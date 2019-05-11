@@ -15,15 +15,6 @@ $(document).ready(function () {
         position: "absolute"
     });
 
-    $("form .pageskip").on({
-        click: function (event) {
-            event.preventDefault();
-            var data = $(this).data("action");
-            $("#search").attr("action", data);
-            $("#search").submit();
-        }
-    });
-
     $('.carousel.carousel-slider').carousel({
         fullWidth: true,
         indicators: true
