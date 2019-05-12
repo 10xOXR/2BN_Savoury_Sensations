@@ -99,6 +99,11 @@ main {
   margin: 80px auto;
 }
 
+.container-70 {
+  width: 70vw;
+  margin: 80px auto;
+}
+
 .pagination li.active {
   background-color: #0E5F76;
 }

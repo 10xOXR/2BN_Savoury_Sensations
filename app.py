@@ -116,7 +116,11 @@ def profile(username):
         own_recipes = coll_users.find_one({"username_lower": username})["user_recipes"]
         fav_rec = coll_recipes.find({"_id": {"$in": favs}}).sort( [("views", -1)] )
         own_rec = coll_recipes.find({"_id": {"$in": own_recipes}}).sort( [("views", -1)] )
-        return render_template("profile.html", image = user_img, username = user, favs = fav_rec, own_rec = own_rec)
+        return render_template("profile.html",
+                                image = user_img,
+                                username = user,
+                                favs = fav_rec,
+                                own_rec = own_rec)
 
 # Change Password
 @app.route("/change-password/<username>", methods=["GET", "POST"])
@@ -221,7 +225,10 @@ def recipe_detail(recipe_id):
                 favourite = []
                 
         coll_recipes.update({"_id": ObjectId(recipe_id)}, {"$inc": {"views": 1}})
-        return render_template("recipedetail.html", recipe = recipe_name, author = author, favourites = favourite)
+        return render_template("recipedetail.html",
+                                recipe = recipe_name,
+                                author = author,
+                                favourites = favourite)
 
 # Add Favourite Function
 @app.route("/add_favourite/<recipe_id>")
@@ -240,8 +247,12 @@ def update_recipe(recipe_id):
         selected_recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
         steps = selected_recipe.get("prepSteps")
         dropdowns(cuisine, course, allergens)
-        return render_template("updaterecipe.html", selected_recipe = selected_recipe, cuisine = sorted(cuisine), 
-                                course = course, allergens = allergens, steps = steps)
+        return render_template("updaterecipe.html",
+                                selected_recipe = selected_recipe,
+                                cuisine = sorted(cuisine), 
+                                course = course,
+                                allergens = allergens,
+                                steps = steps)
 
 # Update Recipe - Insert Update Function
 @app.route("/insert_update/<recipe_id>", methods=["POST"])
