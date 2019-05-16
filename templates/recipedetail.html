@@ -34,7 +34,6 @@
         <div class="col s3">
             <a class="waves-effect waves-light btn" href="javascript:history.back()">Go Back</a>
         </div>
-        {% if session.user == author|lower %}
         <div class="col s3">
             {% if recipe._id in favourites %}
             <a class="waves-effect waves-light btn disabled"
@@ -44,6 +43,7 @@
                 Favourite</a>
             {% endif %}
         </div>
+        {% if session.user == author|lower %}
         <div class="col s3">
             <a class="waves-effect waves-light btn" href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit</a>
         </div>

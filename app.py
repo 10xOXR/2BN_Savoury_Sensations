@@ -143,6 +143,37 @@ def change_password(username):
 
         return render_template("changepassword.html", username = session["user"])
 
+# Delete Account
+@app.route("/delete-account/<username>", methods=["POST"])
+def delete_account(username):
+        user = coll_users.find_one({"username_lower": username})
+        if check_password_hash(user["password"], request.form.get("password")):
+                user_rec = [recipe for recipe in user.get("user_recipes")]
+                # Delete all user recipes if checkbox selected and remove from other
+                # users' favourite recipes.
+                if request.form.get("del-recipes") == "on":
+                        for item in user_rec:
+                                coll_recipes.remove({"_id": item})
+                                coll_users.update_many({}, {"$pull": {"user_favs": item}})
+                # If user chooses not to delete their recipes, reassign the author to Admin
+                admin = coll_users.find_one({"username_lower": "admin"})["_id"]
+                for item in user_rec:
+                        coll_recipes.update({"_id": item}, {"$set": {"author": admin}})
+                        coll_users.update({"_id": admin}, {"$push": {"user_recipes": item}})
+                # Decrement all recipes' favourite integers that user had in their own favourites
+                user_favs = [fav for fav in user.get("user_favs")]
+                for fav in user_favs:
+                        coll_recipes.update({"_id": fav}, {"$inc": {"favourites": -1}})
+                # Delete User session
+                session.pop("user")
+                # Delete user record
+                coll_users.remove({"_id": user.get("_id")})
+                return redirect(url_for("landing_page"))
+        else:
+                flash("Incorrect Password")
+                return redirect(request.referrer)
+
+
 # User Logout
 @app.route("/logout")
 def logout():

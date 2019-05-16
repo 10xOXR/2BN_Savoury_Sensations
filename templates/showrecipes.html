@@ -7,27 +7,35 @@
     <h3>All Recipes</h3>
 
     {% if total_recipes|string %}
-        <h5>Showing {{ (page * 8) - 7 }} - {{ count }} of {{ total_recipes }} recipes.</h5>
+    <h5>Showing {{ (page * 8) - 7 }} - {{ count }} of {{ total_recipes }} recipes.</h5>
     {% else %}
-        <h5></h5>
+    <h5></h5>
     {% endif %}
-    <a class="waves-effect waves-light btn"
-            href="{{ url_for('show_recipes', sort='recipeName', order=1) }}">Sort Alphabetically</a>
+    <a class="waves-effect waves-light btn" href="{{ url_for('show_recipes', sort='recipeName', order=1) }}">Sort
+        Alphabetically</a>
     <div class="row">
         {% for recipe in recipes %}
-            {% include "partials/_cards.html" %}
+        {% include "partials/_cards.html" %}
         {% endfor %}
-        <ul class="pagination right">
+    </div>
+    <div>
+        <ul class="pagination center">
             {% if pages %}
-                <li {% if not request.args or not args('page') or args('page')=='1' %} class="disabled" {% endif %}><a href="{{ url_for('show_recipes', sort=args('sort'), order=args('order'), page=previous_page) }}"><i class="material-icons">chevron_left</i></a></li>
-                {% for page in pages %}
-                    <li {% if args('page') %}{% if page|string in args('page') %} class="active waves-effect waves-red" {% endif %}{% elif page==1 %} class="active waves-effect waves-red" {% endif %}class="waves-effect"><a
-                        href="{{ url_for('show_recipes', sort=args('sort'), order=args('order'), page=page) }}">{{ loop.index }}</a>
-                    </li>
-                {% endfor %}
-                <li {% if args('page')==pages|length|string %} class="disabled" {% endif %} class="waves-effect"><a href="{{ url_for('show_recipes', sort=args('sort'), order=args('order'), page=next_page) }}"><i class="material-icons">chevron_right</i></a></li>
+            <li {% if not request.args or not args('page') or args('page')=='1' %} class="disabled" {% endif %}><a
+                    href="{{ url_for('show_recipes', sort=args('sort'), order=args('order'), page=previous_page) }}"><i
+                        class="material-icons">chevron_left</i></a></li>
+            {% for page in pages %}
+            <li {% if args('page') %}{% if page|string in args('page') %} class="active waves-effect waves-red"
+                {% endif %}{% elif page==1 %} class="active waves-effect waves-red" {% endif %}class="waves-effect">
+                <a
+                    href="{{ url_for('show_recipes', sort=args('sort'), order=args('order'), page=page) }}">{{ loop.index }}</a>
+            </li>
+            {% endfor %}
+            <li {% if args('page')==pages|length|string %} class="disabled" {% endif %} class="waves-effect"><a
+                    href="{{ url_for('show_recipes', sort=args('sort'), order=args('order'), page=next_page) }}"><i
+                        class="material-icons">chevron_right</i></a></li>
             {% else %}
-                <li></li>
+            <li></li>
             {% endif %}
         </ul>
     </div>

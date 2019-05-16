@@ -1,7 +1,14 @@
 $(document).ready(function () {
 
     $(".collapsible").collapsible();
-    $(".modal").modal({dismissible:false});
+    $('.modal').modal({
+        dismissible: false, 
+       /* onCloseEnd: function () {
+            $('#password').val('');
+            $('#del-recipes').prop('checked', false);
+
+        }*/
+    });
     $(".sidenav").sidenav();
     $(".tabs").tabs();
 
