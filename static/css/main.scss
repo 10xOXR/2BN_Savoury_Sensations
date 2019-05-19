@@ -1,3 +1,8 @@
+/*-------------------------------- VARIABLES --------------------------------*/
+$site-blue: #0E5F76 ;
+
+/*-------------------------------- GLOBAL SETTINGS --------------------------------*/
+
 body {
     background-image: url("/static/img/background.png");
     background-size: cover;
@@ -8,9 +13,69 @@ body {
     position: relative;
 }
 
+main {
+    flex: 1 0 auto;
+}
+
+.site-blue-text {
+    color: $site-blue;
+}
+
+.text-transform-none {
+    text-transform: none;
+}
+
+.bold {
+    font-weight: bold;
+}
+
 i {
     vertical-align: center;
 }
+
+/*-------------------------------- CONTAINER SETTINGS --------------------------------*/
+
+.container-main {
+    width: 90vw;
+    margin: 80px auto;
+}
+
+.container-70 {
+    width: 70vw;
+    margin: 80px auto;
+}
+
+/*-------------------------------- NAVBAR SETTINGS --------------------------------*/
+
+nav {
+    position: fixed;
+    top: 0px;
+    z-index: 10;
+    background-color: $site-blue;
+}
+
+nav img {
+    width: 5em;
+}
+
+#nav-mobile a {
+    color: white;
+}
+
+ul#mobile-demo {
+    background-color: $site-blue;
+}
+
+.sidenav li a {
+    color: white;
+}
+
+.container-nav {
+    width: 95vw;
+    margin: auto;
+}
+
+/*-------------------------------- CARD SETTINGS --------------------------------*/
 
 .card {
     border-radius: 20px;
@@ -44,94 +109,35 @@ i {
     margin-right: 0;
 }
 
+/*-------------------------------- PAGINATION SETTINGS --------------------------------*/
+
 .pagination li {
     display: inline-block;
     font-size: 1.2rem;
 }
 
-nav {
-    position: fixed;
-    top: 0px;
-    z-index: 10;
-    background-color: #0E5F76;
-}
-
-nav img {
-    width: 5em;
-}
-
-#nav-mobile a {
-    color: #FCE38A;
-}
-
-ul#mobile-demo {
-    background-color: #0E5F76;
-}
-
-.sidenav li a {
-    color: #FCE38A;
-}
-
-.container-nav {
-    width: 95vw;
-    margin: auto;
-}
-
-main {
-    flex: 1 0 auto;
-}
-
-.container-main {
-    width: 90vw;
-    margin: 80px auto;
-}
-
-.container-70 {
-    width: 70vw;
-    margin: 80px auto;
-}
-
 .pagination li.active {
-    background-color: #0E5F76;
+    background-color: $site-blue;
 }
 
 .pagination li.active a {
-    color: #FCE38A;
+    color: white;
 }
 
-.social-icons {
-    grid-area: icons;
-    justify-items: end;
-    font-size: 2rem;
-    text-align: right;
-}
+/*-------------------------------- HOMEPAGE SETTINGS --------------------------------*/
 
 .landing-section {
-    display: grid;
     height: 50vh;
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: "welcome-text recipe-carousel";
-}
-
-.welcome-text {    
-    grid-area: welcome-text;
-    margin: auto;
-}
-
-.recipe-carousel {
-    grid-area: recipe-carousel;
-    align-self: center;
-    justify-items: center;
 }
 
 .carousel {
-    border-radius: 1.25em;
-    border: 10px solid #0E5F76;
+    border-radius: 1em;
+    border: 10px solid $site-blue;
 }
 
 .carousel .btn {
-    color: #FCE38A;
-    background-color: #0E5F76;
+    color: white;
+    background-color: $site-blue;
 }
 
 .carousel .carousel-item img {
@@ -144,6 +150,8 @@ main {
     background-color: rgba(255, 255, 255, 0.7);
 }
 
+/*-------------------------------- FOOTER SETTINGS --------------------------------*/
+
 #footer {
     display: grid;
     grid-template-rows: 1fr 1fr;
@@ -153,13 +161,13 @@ main {
     bottom: 0px;
     z-index: 10;
     padding: 0px;
-    background-color: #0E5F76;
-    color: #FCE38A;
+    background-color: $site-blue;
+    color: white;
 }
 
 #footer a {
     text-decoration: none;
-    color: #FCE38A;
+    color: white;
 }
 
 #footer p {
@@ -167,7 +175,17 @@ main {
     margin: 14px 0px 10px 50px;
 }
 
+.social-icons {
+    grid-area: icons;
+    justify-items: end;
+    font-size: 2rem;
+    text-align: right;
+}
+
+/*-------------------------------- MEDIA QUERIES --------------------------------*/
+
 @media (max-width: 600px) {
+    
 
     ::placeholder {
         font-size: 12px;
