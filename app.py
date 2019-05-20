@@ -370,6 +370,18 @@ def add_favourite(recipe_id):
         coll_recipes.update({"_id": ObjectId(recipe_id)}, {"$inc": {"favourites": 1}})
         return redirect(url_for("recipe_detail", recipe_id = recipe_id))
 
+# Remove Favouite Function
+@app.route("/remove_favourite/<recipe_id>")
+def remove_favourite(recipe_id):
+        """
+        Takes the current recipe ID and removes it from the the user's
+        favourites. Only available if the favourite exists.
+        """
+        user = coll_users.find_one({"username_lower": session["user"]})["_id"]
+        coll_users.update_one({"_id": ObjectId(user)}, {"$pull": {"user_favs": ObjectId(recipe_id)}})
+        coll_recipes.update({"_id": ObjectId(recipe_id)}, {"$inc": {"favourites": -1}})
+        return redirect(url_for("recipe_detail", recipe_id = recipe_id))
+
 # Update Recipe Page
 @app.route("/update_recipe/<recipe_id>")
 def update_recipe(recipe_id):

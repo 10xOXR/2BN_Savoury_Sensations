@@ -21,7 +21,8 @@
 </nav>
 
 <ul class="sidenav" id="mobile-demo">
-    <li><a href="{{ url_for('show_recipes') }}">Home</a></li>
+    <li><a href="{{ url_for('landing_page') }}">Home</a></li>
+    <li><a href="{{ url_for('show_recipes') }}">Browse Recipes</a></li>
     {% if session.user %}
     <li><a href="{{ url_for('add_recipe') }}">Add Recipe</a></li>
     <li><a href="{{ url_for('search_recipes', skip=0) }}">Search</a></li>

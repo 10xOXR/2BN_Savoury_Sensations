@@ -21,12 +21,20 @@ main {
     color: $site-blue;
 }
 
+.site-blue-bg {
+    background-color: $site-blue;
+}
+
 .text-transform-none {
     text-transform: none;
 }
 
 .bold {
     font-weight: bold;
+}
+
+.text-shadow {
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 
 i {
@@ -198,10 +206,6 @@ ul#mobile-demo {
 
     .landing-section {
         margin: 60px 10px 20px 10px;
-        grid-template-columns: 1fr;
-        grid-template-areas: 
-            "welcome-text"
-            "recipe-carousel";
     }
 
     .carousel {

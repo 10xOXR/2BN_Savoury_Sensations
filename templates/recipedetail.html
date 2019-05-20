@@ -12,49 +12,32 @@
         {% endwith %}
     </h5>
 
-    <h3>Recipe Details: {{ recipe.recipeName }}</h3>
 
-    <div class="row">
-        <div class="col s12 m6 card-image">
+
+    <div class="card row">
+        <div class="col s12 m5 card-image">
             {% if recipe.imgUrl %}
             <img src="{{ recipe.imgUrl }}" alt="Recipe Image">
             {% else %}
             <img src="{{ url_for('static', filename='img/no_img.jpg') }}" alt="No Image">
             {% endif %}
         </div>
-        <div class="col s3">
-            <p>Prep Time: {{ recipe.prepTime }} minutes</p>
-            <p>Cook Time: {{ recipe.cookTime }} minutes</p>
+        <h3 class="center-align bold col s12 m7">{{ recipe.recipeName }}</h3>
+        <div class="center-align col s12 m3">
+            <p><span class="bold">Prep Time:</span> {{ recipe.prepTime }} minutes</p>
+            <p><span class="bold">Cook Time:</span> {{ recipe.cookTime }} minutes</p>
         </div>
-        <div class="col s3">
-            <p>Author: {{ author }}</p>
+        <div class="center-align col s12 m3 offset-m1">
+            <p><span class="bold">Temp:</span> {{ recipe.temp }} °C</p>
+            <p><span class="bold">Author:</span> {{ author }}</p>
+        </div>
+        <div class="center-align col s12 m7">
+            <p><em>{{ recipe.recipeDesc }}</em></p>
         </div>
     </div>
     <div class="row">
-        <div class="col s3">
-            <a class="waves-effect waves-light btn" href="javascript:history.back()">Go Back</a>
-        </div>
-        <div class="col s3">
-            {% if recipe._id in favourites %}
-            <a class="waves-effect waves-light btn disabled"
-                href="{{ url_for('add_favourite', recipe_id=recipe._id) }}">Add Favourite</a>
-            {% else %}
-            <a class="waves-effect waves-light btn" href="{{ url_for('add_favourite', recipe_id=recipe._id) }}">Add
-                Favourite</a>
-            {% endif %}
-        </div>
-        {% if session.user == author|lower %}
-        <div class="col s3">
-            <a class="waves-effect waves-light btn" href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit</a>
-        </div>
-        <div class="col s3">
-            <a class="waves-effect waves-light red btn modal-trigger" href="#modal-delete">Delete</a>
-        </div>
-        {% endif %}
-    </div>
-    <div class="row">
-        <div class="card col s12 m4 l3">
-            <h5>Ingredients</h5>
+        <div class="card col s12 m4 l4">
+            <h5 class="bold">Ingredients</h5>
             <ul>
                 {% for ing in recipe.ingredients %}
                 <li>
@@ -63,8 +46,8 @@
                 {% endfor %}
             </ul>
         </div>
-        <div class=" card col s12 m8 l5">
-            <h5>Preparation Steps</h5>
+        <div class=" card col s12 m7 offset-m1 l7 offset-l1">
+            <h5 class="bold">Preparation Steps</h5>
             <ol>
                 {% for step in recipe.prepSteps %}
                 <li>
@@ -72,6 +55,22 @@
                 </li>
                 {% endfor %}
             </ol>
+        </div>
+        <div class="center-align  col s12">
+            <a class="waves-effect waves-light btn site-blue-bg" href="javascript:history.back()">Go Back</a>
+            {% if session.user %}
+            {% if recipe._id in favourites %}
+            <a class="waves-effect waves-light btn blue"
+                href="{{ url_for('remove_favourite', recipe_id=recipe._id) }}">Remove Favourite</a>
+            {% else %}
+            <a class="waves-effect waves-light btn" href="{{ url_for('add_favourite', recipe_id=recipe._id) }}">Add
+                Favourite</a>
+            {% endif %}
+            {% if session.user == author|lower %}
+            <a class="waves-effect waves-light btn orange text-shadow" href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit</a>
+            <a class="waves-effect waves-light red btn text-shadow modal-trigger" href="#modal-delete">Delete</a>
+            {% endif %}
+            {% endif %}
         </div>
     </div>
 
