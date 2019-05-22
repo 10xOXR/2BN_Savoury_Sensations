@@ -6,12 +6,30 @@ from flask import Flask, render_template, redirect, request, url_for, flash, Mar
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_talisman import Talisman
 
 app = Flask(__name__)
 
+csp = {
+        'default-src': [
+                '\'self\'',
+                'cdnjs.cloudflare.com',
+                '*.fontawesome.com',
+                '*.googleapis.com',
+                '*.gstatic.com'
+        ],
+        'img-src': '*',
+        'script-src': [
+                '\'self\'',
+                'cdnjs.cloudflare.com'
+        ]
+}
+
+Talisman(app, content_security_policy=csp)
+
 app.config["MONGO_DBNAME"] = "m4recipesCollection"
-app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+app.config["MONGO_URI"] = os.getenv("MONGO_URI")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 
@@ -511,5 +529,4 @@ def search_recipes():
 
 if __name__ == "__main__":
         app.run(host=os.environ.get("IP"),
-        port=os.environ.get("PORT"),
-        debug=True)
+        port=os.environ.get("PORT"))
