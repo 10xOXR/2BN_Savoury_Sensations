@@ -19,9 +19,6 @@ main {
   -webkit-box-flex: 1;
       -ms-flex: 1 0 auto;
           flex: 1 0 auto;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
 }
 
 .site-blue-text {
@@ -53,7 +50,7 @@ ul.dropdown-content.select-dropdown li:not(.disabled) span {
 }
 
 .btn {
-  margin: 5% auto;
+  margin: 10px auto;
 }
 
 /*-------------------------------- CONTAINER SETTINGS --------------------------------*/
