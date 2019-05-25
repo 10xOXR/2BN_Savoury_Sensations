@@ -20,7 +20,7 @@ csp = {
         ],
         'img-src': '*',
         'script-src': [
-                '\'self\'',
+                '\'unsafe-inline\' \'self\'',
                 'cdnjs.cloudflare.com'
         ]
 }

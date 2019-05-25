@@ -19,6 +19,9 @@ main {
   -webkit-box-flex: 1;
       -ms-flex: 1 0 auto;
           flex: 1 0 auto;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 .site-blue-text {
@@ -45,6 +48,14 @@ i {
   vertical-align: center;
 }
 
+ul.dropdown-content.select-dropdown li:not(.disabled) span {
+  color: #0E5F76;
+}
+
+.btn {
+  margin: 5% auto;
+}
+
 /*-------------------------------- CONTAINER SETTINGS --------------------------------*/
 .container-main {
   width: 90vw;
@@ -54,6 +65,11 @@ i {
 .container-70 {
   width: 70vw;
   margin: 80px auto;
+}
+
+.container-nav {
+  width: 95vw;
+  margin: auto;
 }
 
 /*-------------------------------- NAVBAR SETTINGS --------------------------------*/
@@ -78,11 +94,6 @@ ul#mobile-demo {
 
 .sidenav li a {
   color: white;
-}
-
-.container-nav {
-  width: 95vw;
-  margin: auto;
 }
 
 /*-------------------------------- CARD SETTINGS --------------------------------*/
@@ -122,6 +133,7 @@ ul#mobile-demo {
 
 .card .card-action a:not(.btn):not(.btn-large):not(.btn-small):not(.btn-large):not(.btn-floating) {
   margin-right: 0;
+  color: #0E5F76;
 }
 
 /*-------------------------------- PAGINATION SETTINGS --------------------------------*/
@@ -145,7 +157,7 @@ ul#mobile-demo {
 
 .carousel {
   border-radius: 1em;
-  border: 10px solid #0E5F76;
+  border: 7px solid #0E5F76;
 }
 
 .carousel .btn {
@@ -162,6 +174,17 @@ ul#mobile-demo {
 .carousel .carousel-fixed-item {
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.7);
+}
+
+/*-------------------------------- RECIPE DETAIL SETTINGS --------------------------------*/
+#ingredients ul {
+  padding: 4% 7%;
+  text-align: justify;
+}
+
+#prepsteps ol {
+  padding: 4% 7%;
+  text-align: justify;
 }
 
 /*-------------------------------- FOOTER SETTINGS --------------------------------*/
@@ -214,6 +237,9 @@ ul#mobile-demo {
   }
   ::placeholder {
     font-size: 12px;
+  }
+  .container-70 {
+    width: 90vw;
   }
   .card-image img {
     -o-object-fit: cover;

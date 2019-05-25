@@ -1,13 +1,16 @@
 $(document).ready(function () {
 
+    $('#sort_by').val(localStorage.getItem("sort_by"));
+    localStorage.clear();
+
     $(".collapsible").collapsible();
     $('.modal').modal({
-        dismissible: false, 
-            onCloseEnd: function () {
+        dismissible: false,
+        onCloseEnd: function () {
             $('#password').val('');
             $('#del-recipes').prop('checked', false);
 
-        } 
+        }
     });
     $(".sidenav").sidenav();
     $(".tabs").tabs();
@@ -32,4 +35,12 @@ $(document).ready(function () {
         $('.carousel.carousel-slider').carousel('next');
         setTimeout(autoplay, 5000);
     }
+
+    $(function () {
+        $("#sort_by").change(function () {
+            var value = $(this).val();
+            localStorage.setItem("sort_by", value);
+            window.location = window.location.pathname + "?" + this.value;
+        });
+    });
 });

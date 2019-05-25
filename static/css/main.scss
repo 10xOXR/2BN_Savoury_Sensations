@@ -15,6 +15,7 @@ body {
 
 main {
     flex: 1 0 auto;
+    align-items: center;
 }
 
 .site-blue-text {
@@ -41,6 +42,14 @@ i {
     vertical-align: center;
 }
 
+ul.dropdown-content.select-dropdown li:not(.disabled) span {
+    color: $site-blue;
+}
+
+.btn {
+    margin: 5% auto;
+}
+
 /*-------------------------------- CONTAINER SETTINGS --------------------------------*/
 
 .container-main {
@@ -51,6 +60,11 @@ i {
 .container-70 {
     width: 70vw;
     margin: 80px auto;
+}
+
+.container-nav {
+    width: 95vw;
+    margin: auto;
 }
 
 /*-------------------------------- NAVBAR SETTINGS --------------------------------*/
@@ -76,11 +90,6 @@ ul#mobile-demo {
 
 .sidenav li a {
     color: white;
-}
-
-.container-nav {
-    width: 95vw;
-    margin: auto;
 }
 
 /*-------------------------------- CARD SETTINGS --------------------------------*/
@@ -115,6 +124,7 @@ ul#mobile-demo {
 }
 .card .card-action a:not(.btn):not(.btn-large):not(.btn-small):not(.btn-large):not(.btn-floating) {
     margin-right: 0;
+    color: $site-blue;
 }
 
 /*-------------------------------- PAGINATION SETTINGS --------------------------------*/
@@ -140,7 +150,7 @@ ul#mobile-demo {
 
 .carousel {
     border-radius: 1em;
-    border: 10px solid $site-blue;
+    border: 7px solid $site-blue;
 }
 
 .carousel .btn {
@@ -156,6 +166,18 @@ ul#mobile-demo {
 .carousel .carousel-fixed-item {
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.7);
+}
+
+/*-------------------------------- RECIPE DETAIL SETTINGS --------------------------------*/
+
+#ingredients ul {
+    padding: 4% 7%;
+    text-align: justify;
+}
+
+#prepsteps ol {
+    padding: 4% 7%;
+    text-align: justify;
 }
 
 /*-------------------------------- FOOTER SETTINGS --------------------------------*/
@@ -197,6 +219,10 @@ ul#mobile-demo {
 
     ::placeholder {
         font-size: 12px;
+    }
+
+    .container-70 {
+        width: 90vw;
     }
 
     .card-image img {

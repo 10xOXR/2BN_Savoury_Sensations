@@ -4,15 +4,22 @@
 {% set args = request.args.get %}
 
 <div class="container-main">
-    <h3>All Recipes</h3>
-
-    {% if total_recipes|string %}
-    <h5>Showing {{ (page * 8) - 7 }} - {{ count }} of {{ total_recipes }} recipes.</h5>
-    {% else %}
-    <h5></h5>
-    {% endif %}
-    <a class="waves-effect waves-light btn" href="{{ url_for('show_recipes', sort='recipeName', order=1) }}">Sort
-        Alphabetically</a>
+    <div class="row center-align">
+        <h3 class="bold">All Recipes</h3>
+        {% if total_recipes|string %}
+        <h6 class="bold">Showing {{ (page * 8) - 7 }} - {{ count }} of {{ total_recipes }} recipes</h6>
+        {% else %}
+        <h5></h5>
+        {% endif %}
+        <div class="input-field col s12 offset-l5 l2">
+            <select id="sort_by" name="sort_by">
+                <option value="" disabled selected>Sort by:</option>
+                <option value="sort=views&order=-1">Views</option>
+                <option value="sort=recipeName&order=1">Name</option>
+                <option value="sort=favourites&order=-1">Favourites</option>
+            </select>
+        </div>
+    </div>
     <div class="row">
         {% for recipe in recipes %}
         {% include "partials/_cards.html" %}
