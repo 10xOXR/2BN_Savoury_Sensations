@@ -42,49 +42,11 @@
         {% for recipe in favs %}
         {% include "partials/_cards.html" %}
         {% endfor %}
-        <div class="row">
-            <ul class="pagination center">
-                {% if fav_pages %}
-                <li {% if not request.args or not args('page') or args('page')=='1' %} class="disabled" {% endif %}><a
-                        href="{{ url_for('profile', username = session.user, page=fav_previous_page, _anchor='favs') }}"><i
-                            class="material-icons">chevron_left</i></a></li>
-                {% for page in fav_pages %}
-                <li {% if args('page') %}{% if page|string in args('page') %} class="active waves-effect waves-red"
-                    {% endif %}{% elif page==1 %} class="active waves-effect waves-red" {% endif %}class="waves-effect">
-                    <a
-                        href="{{ url_for('profile', username = session.user, page=page, _anchor='favs') }}">{{ loop.index }}</a>
-                </li>
-                {% endfor %}
-                <li {% if args('page')==pages|length|string %} class="disabled" {% endif %} class="waves-effect"><a
-                        href="{{ url_for('profile', username = session.user, page=fav_next_page, _anchor='favs') }}"><i
-                            class="material-icons">chevron_right</i></a></li>
-                {% endif %}
-            </ul>
-        </div>
     </div>
     <div id="ownRecipes" class="row">
         {% for recipe in own_rec %}
         {% include "partials/_cards.html" %}
         {% endfor %}
-        <div class="row">
-            <ul class="pagination center">
-                {% if own_pages %}
-                <li {% if not request.args or not args('page') or args('page')=='1' %} class="disabled" {% endif %}><a
-                        href="{{ url_for('profile', username = session.user, page=own_previous_page, _anchor='ownRecipes') }}"><i
-                            class="material-icons">chevron_left</i></a></li>
-                {% for page in own_pages %}
-                <li {% if args('page') %}{% if page|string in args('page') %} class="active waves-effect waves-red"
-                    {% endif %}{% elif page==1 %} class="active waves-effect waves-red" {% endif %}class="waves-effect">
-                    <a
-                        href="{{ url_for('profile', username = session.user, page=page, _anchor='ownRecipes') }}">{{ loop.index }}</a>
-                </li>
-                {% endfor %}
-                <li {% if args('page')==pages|length|string %} class="disabled" {% endif %} class="waves-effect"><a
-                        href="{{ url_for('profile', username = session.user, page=own_next_page, _anchor='ownRecipes') }}"><i
-                            class="material-icons">chevron_right</i></a></li>
-                {% endif %}
-            </ul>
-        </div>
     </div>
 </div>
 
@@ -92,7 +54,7 @@
 <!-- Modal Structure -->
 <div id="modal-delete" class="modal">
     <div class="modal-content center-align">
-        <h4>DELETE ACCOUNT</h4>
+        <h4 class="red-text bold">DELETE ACCOUNT</h4>
         <h5>But we'll miss you! Are you sure?</h5>
         <h6>Enter your password to confirm:</h6>
         <div class="row">

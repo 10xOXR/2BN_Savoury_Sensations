@@ -43,4 +43,7 @@ $(document).ready(function () {
             window.location = window.location.pathname + "?" + this.value;
         });
     });
+
+    // set the copyright year dynamically for the footer
+	$("#year").html(new Date().getFullYear());
 });

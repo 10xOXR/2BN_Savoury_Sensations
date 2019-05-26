@@ -2,15 +2,15 @@
 {% block content %}
 
 <div class="container-main">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-        <h3 class="site-blue-text bold center-align">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <h3 class="site-blue-text bold center-align">
         {{ message }}
-        </h3>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
+    </h3>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
 
     <div id="recipe-summary" class="card row">
         <div class="col s12 m5 card-image">
@@ -114,15 +114,12 @@
 
 <!-- Modal Structure -->
 <div id="modal-delete" class="modal">
-    <div class="modal-content">
-        <h4>Delete Recipe</h4>
+    <div class="modal-content center-align">
+        <h4 class="red-text bold">Delete Recipe</h4>
         <h5>Are you sure? This can't be undone.</h5>
-    </div>
-    <div class="modal-footer">
-        <a class="waves-effect waves-light red btn " href="{{ url_for('delete_recipe', recipe_id=recipe._id) }}">Delete
-            Recipe</a>
-        <a href="#!" class="modal-close waves-effect waves-light btn">Cancel</a>
-    </div>
+    <a class="waves-effect waves-light red btn " href="{{ url_for('delete_recipe', recipe_id=recipe._id) }}">Delete
+        Recipe</a>
+    <a href="#!" class="modal-close waves-effect waves-light btn">Cancel</a>
 </div>
 </div>
 {% endblock %}
