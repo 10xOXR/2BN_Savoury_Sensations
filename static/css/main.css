@@ -159,6 +159,7 @@ ul#mobile-demo {
 .carousel {
   border-radius: 1em;
   border: 7px solid #0E5F76;
+  margin-bottom: 20px;
 }
 
 .carousel .btn {
