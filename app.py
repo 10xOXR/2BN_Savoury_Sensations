@@ -12,8 +12,8 @@ app = Flask(__name__)
 
 csp = {
         'default-src': [
-                '\'self\'',
-                'cdnjs.cloudflare.com',
+                '\'unsafe-inline\' \'self\'',
+                '*.cloudflare.com',
                 '*.fontawesome.com',
                 '*.googleapis.com',
                 '*.gstatic.com'
@@ -21,7 +21,10 @@ csp = {
         'img-src': '*',
         'script-src': [
                 '\'unsafe-inline\' \'self\'',
-                'cdnjs.cloudflare.com'
+                '*.cloudflare.com',
+                '*.fontawesome.com',
+                '*.googleapis.com',
+                '*.gstatic.com'
         ]
 }
 
@@ -58,6 +61,15 @@ def dropdowns(list1, list2, list3):
                 allergen_type = types.get("allergenType")
                 for item in allergen_type:
                         list3.append(item)
+
+def pagination(recipe_args, page_args, collection):
+        page_count = range(1, (math.ceil(recipe_args.count() / 8)) + 1)
+        pages = [page for page in page_count]
+        previous_page = page_args - 1 if page_args != 1 else 1
+        next_page = page_args + 1 if page_args < pages[-1] else page_args
+        count = page_args * 8 if (page_args * 8) < recipe_args.count() else recipe_args.count()
+        total_recipes = collection.count()
+        return pages, previous_page, next_page, count, total_recipes
 
 # ROUTES
 
@@ -173,6 +185,7 @@ def profile(username):
         # Searches database for the recipe information stored in user profile
         fav_rec = coll_recipes.find({"_id": {"$in": favs}}).sort( [("views", -1)] )
         own_rec = coll_recipes.find({"_id": {"$in": own_recipes}}).sort( [("views", -1)] )
+        
         return render_template("profile.html",
                                 image = user_img,
                                 username = user,
@@ -284,12 +297,7 @@ def show_recipes():
         sort = coll_recipes.find().skip((page_args * 8) - 8).limit(8).sort( [(sort_type, order_type)] )
 
         # Pagination
-        page_count = range(1, (math.ceil(sort.count() / 8)) + 1)
-        pages = [page for page in page_count]
-        previous_page = page_args - 1 if page_args != 1 else 1
-        next_page = page_args + 1 if page_args < pages[-1] else page_args
-        count = page_args * 8 if (page_args * 8) < sort.count() else sort.count()
-        total_recipes = coll_recipes.count()
+        pages, previous_page, next_page, count, total_recipes = pagination(sort, page_args, coll_recipes)
         
         return render_template("showrecipes.html",
                                 recipes = sort,
@@ -363,6 +371,7 @@ def recipe_detail(recipe_id):
         """
         recipe_name = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
         author = coll_users.find_one({"_id": ObjectId(recipe_name.get("author"))})["username"]
+        user_img = coll_users.find_one({"_id": ObjectId(recipe_name.get("author"))})["user_img"]
 
         # Attempt to retrieve user's favourites as a list
         try:
@@ -372,6 +381,7 @@ def recipe_detail(recipe_id):
                 
         coll_recipes.update({"_id": ObjectId(recipe_id)}, {"$inc": {"views": 1}})
         return render_template("recipedetail.html",
+                                image = user_img,
                                 recipe = recipe_name,
                                 author = author,
                                 favourites = favourite)
@@ -388,7 +398,7 @@ def add_favourite(recipe_id):
         coll_recipes.update({"_id": ObjectId(recipe_id)}, {"$inc": {"favourites": 1}})
         return redirect(url_for("recipe_detail", recipe_id = recipe_id))
 
-# Remove Favouite Function
+# Remove Favourite Function
 @app.route("/remove_favourite/<recipe_id>")
 def remove_favourite(recipe_id):
         """
@@ -436,7 +446,7 @@ def insert_update(recipe_id):
         author = recipe.get("author")
         currentViews = recipe.get("views")
         currentFavs = recipe.get("favourites")
-        coll_recipes.update_one({"_id": ObjectId(recipe_id)}, {
+        coll_recipes.update({"_id": ObjectId(recipe_id)}, {
                 "cuisineType": request.form.get("cuisineType"),
                 "courseType": request.form.get("courseType"),
                 "recipeName": request.form.get("recipe_name"),

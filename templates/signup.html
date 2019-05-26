@@ -1,52 +1,52 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div id="sign-up" class="card container-70">
+<div id="sign-up-form" class="card container-70">
     <div class="row">
-        <h3 class="col s12 offset-m3 m6 offset-l3 l6">Sign-up</h3>
-
+        <h3 class="center-align site-blue-text bold">Sign-up</h3>
+        <div class="divider site-blue-bg"></div>
+        <br>
         <form action="{{ url_for('signup') }}" method="POST" class="col s12">
             <div class="row">
                 <div class="input-field col s12 offset-m3 m6 offset-l3 l6">
-                    <i class="fas fa-user prefix"></i>
+                    <i class="fas fa-user site-blue-text prefix"></i>
                     <input id="username" name="username" type="text" autofocus class="validate" required>
                     <label for="username">Username</label>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s12 offset-m3 m6 offset-l3 l6">
-                    <i class="fas fa-key prefix"></i>
+                    <i class="fas fa-key site-blue-text prefix"></i>
                     <input id="password" name="password" type="password" class="validate" required>
                     <label for="password">Password</label>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="input-field col s12 offset-m3 m6 offset-l3 l6">
-                <i class="fas fa-key prefix"></i>
-                <input id="password-check" name="password-check" type="password" class="validate" required>
-                <label for="password">Re-enter Password</label>
-            </div>
-        </div>
-            <div class="row">
-                <h5 class="red-text col s12 offset-m3 m6 offset-l3 l6">
-                    {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                    {% for message in messages %}
-                    {{ message }}
-                    {% endfor %}
-                    {% endif %}
-                    {% endwith %}
-                </h5>
-            </div>
-            <div class="row">
-                <button class="btn waves-effect waves-light col s6 offset-m3 m3 offset-l3 l2" type="submit"
-                    name="action">Register
-                    <i class="material-icons right">check_circle</i>
-                </button>
-            </div>
-        </form>
     </div>
+    <div class="row">
+        <div class="input-field col s12 offset-m3 m6 offset-l3 l6">
+            <i class="fas fa-key site-blue-text prefix"></i>
+            <input id="password-check" name="password-check" type="password" class="validate" required>
+            <label for="password">Re-enter Password</label>
+        </div>
+    </div>
+    <div class="row center-align">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <h5 class="red-text">
+            {{ message }}
+        </h5>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <div class="row center-align">
+        <button class="btn waves-effect waves-light site-blue-bg" type="submit" name="action">Register
+            <i class="material-icons left">check_circle</i>
+        </button>
+    </div>
+    </form>
+</div>
 </div>
 
 {% endblock %}

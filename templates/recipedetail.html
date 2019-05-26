@@ -2,19 +2,17 @@
 {% block content %}
 
 <div class="container-main">
-    <h5>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}
+        <h3 class="site-blue-text bold center-align">
         {{ message }}
+        </h3>
         {% endfor %}
         {% endif %}
         {% endwith %}
-    </h5>
 
-
-
-    <div class="card row">
+    <div id="recipe-summary" class="card row">
         <div class="col s12 m5 card-image">
             {% if recipe.imgUrl %}
             <img src="{{ recipe.imgUrl }}" alt="Recipe Image">
@@ -24,77 +22,107 @@
         </div>
         <div class="col s12 m7">
             <div class="row">
-                <h3 class="center-align bold">{{ recipe.recipeName }}</h3>
-                <div class="row">
-                    <div class="col s12 m6 center-align">
-                        <p><span class="bold">Prep Time:</span> {{ recipe.prepTime }} minutes</p>
-                        <p><span class="bold">Cook Time:</span> {{ recipe.cookTime }} minutes</p>
-                    </div>
-                    <div class="col s12 m6 center-align">
-                        <p><span class="bold">Temp:</span> {{ recipe.temp }} °C</p>
-                        <p><span class="bold">Author:</span> {{ author }}</p>
-                    </div>
+                <h3 class="center-align site-blue-text bold">{{ recipe.recipeName }}</h3>
+                <div class="col s12 center-align">
+                    <img class="tiny-image" src="{{ image }}" alt="User Profile Image">
+                    <br>
+                    <span class="bold">Author:</span> <span class="site-blue-text bold">{{ author }}</span>
                 </div>
-                <div class="center-align">
-                    <p><em>{{ recipe.recipeDesc }}</em></p>
+            </div>
+            <div class="row">
+                <div class="col s4 center-align">
+                    <p class="bold">
+                        Prep Time:
+                        <br>
+                        <span class="site-blue-text">{{ recipe.prepTime }} minutes</span>
+                    </p>
                 </div>
+                <div class="col s4 center-align">
+                    <p class="bold">
+                        <span class="bold">Cook Time:</span>
+                        <br>
+                        <span class="site-blue-text">{{ recipe.cookTime }} minutes</span>
+                    </p>
+                </div>
+                <div class="col s4 center-align">
+                    <p class="bold">
+                        <span class="bold">Temp:</span>
+                        <br>
+                        <span class="site-blue-text">{{ recipe.temp }} °C</span>
+                    </p>
+                </div>
+            </div>
+            <div class="center-align">
+                <p class="bold">
+                    <span class="red-text">Allergens:</span>
+                    {% if recipe.allergens %}
+                    {% for allergen in recipe.allergens %}
+                    {{ allergen }}{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                    {% else %}
+                    None
+                    {% endif %}
+                </p>
+            </div>
+            <div class="center-align">
+                <p><em>{{ recipe.recipeDesc }}</em></p>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div id="ingredients" class="card col s12 m4 l4">
-            <h5 class="center-align bold">Ingredients</h5>
-            <div class="divider site-blue-bg"></div>
-            <ul>
-                {% for ing in recipe.ingredients %}
-                <li>
-                    <p>&#9658; {{ ing }}</p>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div id="prepsteps" class=" card col s12 m7 offset-m1 l7 offset-l1">
-            <h5 class="center-align bold">Preparation Steps</h5>
-            <div class="divider site-blue-bg"></div>
-            <ol>
-                {% for step in recipe.prepSteps %}
-                <li>
-                    <p> {{ step }}</p>
-                </li>
-                {% endfor %}
-            </ol>
-        </div>
-        <div class="center-align  col s12">
-            <a class="waves-effect waves-light btn site-blue-bg" href="javascript:history.back()">Go Back</a>
-            {% if session.user %}
-            {% if recipe._id in favourites %}
-            <a class="waves-effect waves-light btn blue"
-                href="{{ url_for('remove_favourite', recipe_id=recipe._id) }}">Remove Favourite</a>
-            {% else %}
-            <a class="waves-effect waves-light btn" href="{{ url_for('add_favourite', recipe_id=recipe._id) }}">Add
-                Favourite</a>
-            {% endif %}
-            {% if session.user == author|lower or 'admin' %}
-            <a class="waves-effect waves-light btn orange text-shadow"
-                href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit</a>
-            <a class="waves-effect waves-light red btn text-shadow modal-trigger" href="#modal-delete">Delete</a>
-            {% endif %}
-            {% endif %}
-        </div>
+</div>
+<div class="row container-main">
+    <div id="ingredients" class="card col s12 m4 l4">
+        <h5 class="center-align site-blue-text bold">Ingredients</h5>
+        <div class="divider site-blue-bg"></div>
+        <ul>
+            {% for ing in recipe.ingredients %}
+            <li>
+                <p><span class="site-blue-text">&#9658;</span> {{ ing }}</p>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
+    <div id="prepsteps" class=" card col s12 m7 offset-m1 l7 offset-l1">
+        <h5 class="center-align site-blue-text bold">Preparation Steps</h5>
+        <div class="divider site-blue-bg"></div>
+        <ol>
+            {% for step in recipe.prepSteps %}
+            <li>
+                <p> {{ step }}</p>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+    <div class="center-align  col s12">
+        <a class="waves-effect waves-light btn site-blue-bg" href="javascript:history.back()">Go Back</a>
+        {% if session.user %}
+        {% if recipe._id in favourites %}
+        <a class="waves-effect waves-light btn blue"
+            href="{{ url_for('remove_favourite', recipe_id=recipe._id) }}">Remove Favourite</a>
+        {% else %}
+        <a class="waves-effect waves-light btn" href="{{ url_for('add_favourite', recipe_id=recipe._id) }}">Add
+            Favourite</a>
+        {% endif %}
+        {% if session.user == author|lower or 'admin' %}
+        <a class="waves-effect waves-light btn orange text-shadow"
+            href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit</a>
+        <a class="waves-effect waves-light red btn text-shadow modal-trigger" href="#modal-delete">Delete</a>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
 
-    <!-- Modal Structure -->
-    <div id="modal-delete" class="modal">
-        <div class="modal-content">
-            <h4>Delete Recipe</h4>
-            <h5>Are you sure? This can't be undone.</h5>
-        </div>
-        <div class="modal-footer">
-            <a class="waves-effect waves-light red btn "
-                href="{{ url_for('delete_recipe', recipe_id=recipe._id) }}">Delete
-                Recipe</a>
-            <a href="#!" class="modal-close waves-effect waves-light btn">Cancel</a>
-        </div>
+<!-- Modal Structure -->
+<div id="modal-delete" class="modal">
+    <div class="modal-content">
+        <h4>Delete Recipe</h4>
+        <h5>Are you sure? This can't be undone.</h5>
     </div>
+    <div class="modal-footer">
+        <a class="waves-effect waves-light red btn " href="{{ url_for('delete_recipe', recipe_id=recipe._id) }}">Delete
+            Recipe</a>
+        <a href="#!" class="modal-close waves-effect waves-light btn">Cancel</a>
+    </div>
+</div>
 </div>
 {% endblock %}

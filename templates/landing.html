@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col s12 m5 welcome-text">
             <div class="card center-align">
-                <h4>Welcome to<br>2BN Savoury Sensations!</h4>
+                <h4 class="bold site-blue-text">Welcome to<br>2BN Savoury Sensations!</h4>
                 <p>There’s a time and place for good food, and here you’ll find everything that you need to make
                     mouth-watering meals with the minimum of fuss!</p>
                 <p>Feel free to <a class="bold site-blue-text" href="{{ url_for('show_recipes') }}">browse</a> our delicious recipes,
@@ -20,8 +20,8 @@
                 {% for recipe in slideshow %}
                 <div class="carousel-item">
                     <div class="carousel-fixed-item center">
-                        <h5>{{ recipe.recipeName }}</h5>
-                        <p class="truncate">{{ recipe.recipeDesc }}</p>
+                        <h5 class="bold site-blue-text">{{ recipe.recipeName }}</h5>
+                        <p class="truncate bold">{{ recipe.recipeDesc }}</p>
                         <a class="btn waves-effect darken-text-2"
                             href="{{ url_for('recipe_detail', recipe_id=recipe._id) }}">View Recipe</a>
                     </div>

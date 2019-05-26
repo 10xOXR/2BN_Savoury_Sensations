@@ -14,8 +14,12 @@
             <p><i class="fas fa-heart red-text"></i> {{ recipe.favourites }}</p>
         </div>
         <div class="card-reveal">
-            <span class="card-title grey-text text-darken-4">{{ recipe.recipeName }}<i
-                    class="material-icons right">close</i></span>
+            <h5 class="card-title center-align">
+                <i class="fas fa-times material-icons right"></i>
+                <span class="grey-text text-darken-4 bold">{{ recipe.recipeName }}
+                </span>
+            </h5>
+
             <p>{{ recipe.recipeDesc }}</p>
         </div>
     </div>

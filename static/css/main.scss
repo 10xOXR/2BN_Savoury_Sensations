@@ -79,6 +79,10 @@ nav img {
     width: 5em;
 }
 
+nav .brand-logo {
+    font-size: 2.6rem;
+}
+
 #nav-mobile a {
     color: white;
 }
@@ -105,10 +109,10 @@ ul#mobile-demo {
 
 .card .card-image .card-title {
     background-color: rgba(255, 255, 255, 0.8);
-    color: #000;
+    color: $site-blue;
     text-align: center;
     width: 100%;
-    font-weight: 400;
+    font-weight: bold;
     padding: 5px;
 }
 
@@ -179,6 +183,48 @@ ul#mobile-demo {
     text-align: justify;
 }
 
+.tiny-image {
+    width: 50px;
+    height: 50px;
+}
+
+#recipe-summary .card-image img {
+    object-fit: cover;
+    height: 50vh;
+}
+
+/*-------------------------------- PROFILE SETTINGS --------------------------------*/
+
+.tabs .tab a {
+    color: $site-blue;
+}
+
+.tabs .tab a:hover,
+.tabs .tab a.active {
+    color: $site-blue;
+    background-color: rgba(14, 95, 118, 0.2);
+}
+
+.tabs .indicator {
+    background-color: $site-blue;
+}
+
+.tabs .tab a:focus, .tabs .tab a:focus.active {
+    background-color: rgba(14, 95, 118, 0.2);
+}
+
+/*-------------------------------- LOGIN PAGE SETTINGS --------------------------------*/
+
+#login-form .row {
+    margin-bottom: 0px;
+}
+
+/*-------------------------------- SIGNUP PAGE SETTINGS --------------------------------*/
+
+#sign-up-form .row {
+    margin-bottom: 0px;
+}
+
 /*-------------------------------- FOOTER SETTINGS --------------------------------*/
 
 #footer {
@@ -224,9 +270,9 @@ ul#mobile-demo {
         width: 90vw;
     }
 
-    .card-image img {
+    #recipe-summary .card-image img {
         object-fit: cover;
-        height: 30vh;
+        height: 35vh;
     }
 
     .landing-section {

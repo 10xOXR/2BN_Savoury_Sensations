@@ -1,7 +1,8 @@
 <nav>
     <div class="nav-wrapper container-nav">
-        <a href="{{ url_for('landing_page') }}" class="brand-logo"><img
-                src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo"></a>
+        <a href="{{ url_for('landing_page') }}" class="brand-logo">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+        </a>
         <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="{{ url_for('landing_page') }}">Home</a></li>

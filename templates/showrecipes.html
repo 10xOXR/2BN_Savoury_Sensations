@@ -5,7 +5,7 @@
 
 <div class="container-main">
     <div class="row center-align">
-        <h3 class="bold">All Recipes</h3>
+        <h3 class="bold site-blue-text">All Recipes</h3>
         {% if total_recipes|string %}
         <h6 class="bold">Showing {{ (page * 8) - 7 }} - {{ count }} of {{ total_recipes }} recipes</h6>
         {% else %}
@@ -41,8 +41,6 @@
             <li {% if args('page')==pages|length|string %} class="disabled" {% endif %} class="waves-effect"><a
                     href="{{ url_for('show_recipes', sort=args('sort'), order=args('order'), page=next_page) }}"><i
                         class="material-icons">chevron_right</i></a></li>
-            {% else %}
-            <li></li>
             {% endif %}
         </ul>
     </div>

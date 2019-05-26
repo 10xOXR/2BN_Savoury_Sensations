@@ -3,103 +3,106 @@
 
 {% set args = request.args.get %}
 
-<div class="card container-main">
-    <h3 class="center-align bold">Search Recipes</h3>
-    <div class="row">
-        <form id="search" class="col s12">
-            <div class="row">
-                <div class="input-field col s12">
-                    <i class="fas fa-file-alt prefix"></i>
-                    <input id="search_keys" name="search_keys" type="text" class="validate"
-                        placeholder="Please enter your search terms."
-                        value="{% if keywords %}{{ keywords }}{% endif %}">
-                    <label for="search_keys">Keywords</label>
+<div class="container-main">
+    <div class="card">
+        <h3 class="center-align bold site-blue-text">Search Recipes</h3>
+        <div class="divider site-blue-bg"></div>
+        <br>
+        <div class="row">
+            <form id="search" class="col s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="fas fa-file-alt site-blue-text prefix"></i>
+                        <input id="search_keys" name="search_keys" type="text" class="validate"
+                            placeholder="Please enter your search terms."
+                            value="{% if keywords %}{{ keywords }}{% endif %}">
+                        <label for="search_keys">Keywords</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12 m4">
-                    <i class="fas fa-pepper-hot prefix"></i>
-                    <select id="cuisine_filter" name="cuisine_filter">
-                        <option value="" disabled selected>Filter by Cuisine</option>
-                        <option value=""></option>
-                        {% for item in cuisine %}
-                        {% if item == f_cuisine %}
-                        <option value="{{ item }}" selected>{{ item }}</option>
-                        {% else %}
-                        <option value="{{ item }}">{{ item }}</option>
-                        {% endif %}
-                        {% endfor %}
-                    </select>
-                    <label for="cuisine_filter">Cuisine Type</label>
+                <div class="row">
+                    <div class="input-field col s12 m4">
+                        <i class="fas fa-pepper-hot site-blue-text prefix"></i>
+                        <select id="cuisine_filter" name="cuisine_filter">
+                            <option value="" disabled selected>Filter by Cuisine</option>
+                            <option value=""></option>
+                            {% for item in cuisine %}
+                            {% if item == f_cuisine %}
+                            <option value="{{ item }}" selected>{{ item }}</option>
+                            {% else %}
+                            <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <label for="cuisine_filter">Cuisine Type</label>
+                    </div>
+                    <div class="input-field col s12 m4">
+                        <i class="fas fa-utensils site-blue-text prefix"></i>
+                        <select id="course_filter" name="course_filter">
+                            <option value="" disabled selected>Filter by Course</option>
+                            <option value=""></option>
+                            {% for item in course %}
+                            {% if item == f_course %}
+                            <option value="{{ item }}" selected>{{ item }}</option>
+                            {% else %}
+                            <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <label for="course_filter">Course Type</label>
+                    </div>
+                    <div class="input-field col s12 m4">
+                        <select id="allergen_filter" name="allergen_filter" multiple>
+                            <option value="" disabled>Filter out allergens</option>
+                            {% for item in allergens %}
+                            {% if item in f_allergen %}
+                            <option value="{{ item }}" selected>{{ item }}</option>
+                            {% else %}
+                            <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <label for="allergen_filter">Allergens</label>
+                    </div>
                 </div>
-                <div class="input-field col s12 m4">
-                    <i class="fas fa-utensils prefix"></i>
-                    <select id="course_filter" name="course_filter">
-                        <option value="" disabled selected>Filter by Course</option>
-                        <option value=""></option>
-                        {% for item in course %}
-                        {% if item == f_course %}
-                        <option value="{{ item }}" selected>{{ item }}</option>
-                        {% else %}
-                        <option value="{{ item }}">{{ item }}</option>
-                        {% endif %}
-                        {% endfor %}
-                    </select>
-                    <label for="course_filter">Course Type</label>
+                <div class="row">
+                    <div class="col s12 center-align">
+                        <button class="btn waves-effect waves-light site-blue-bg" type="submit">Search
+                            <i class="fas fa-search left"></i>
+                        </button>
+                        <a class="btn waves-effect waves-light site-blue-bg" href="{{ url_for('search_recipes') }}"><i
+                                class="fas fa-undo-alt left"></i>Reset</a>
+                    </div>
                 </div>
-                <div class="input-field col s12 m4">
-                    <select id="allergen_filter" name="allergen_filter" multiple>
-                        <option value="" disabled>Filter out allergens</option>
-                        {% for item in allergens %}
-                        {% if item in f_allergen %}
-                        <option value="{{ item }}" selected>{{ item }}</option>
-                        {% else %}
-                        <option value="{{ item }}">{{ item }}</option>
-                        {% endif %}
-                        {% endfor %}
-                    </select>
-                    <label for="allergen_filter">Allergens</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col s12 center-align">
-                    <button class="btn waves-effect waves-light site-blue-bg" type="submit">Search
-                        <i class="fas fa-search left"></i>
-                    </button>
-                    <a class="btn waves-effect waves-light site-blue-bg" href="{{ url_for('search_recipes') }}"><i
-                        class="fas fa-undo-alt left"></i>Reset</a>
-                </div>
-            </div>
-            <div class="row">
-                    {% if results_count %}
-                    <h6 class="center-align bold">Results: Showing {{ (page * 8) - 7 }} - {{ count }} of {{ results_count }} matches</h6>
-                    {% else %}
-                    <h5></h5>
-                    {% endif %}
-                    {% for recipe in recipes %}
-                    {% include "partials/_cards.html" %}
-                    {% endfor %}
-                </div>
-            <div>
-                <ul class="pagination center">
-                    {% if pages %}
-                    <li {% if not request.args or not args('page') or args('page')=='1' %} class="disabled" {% endif %}>
-                        <a
-                            href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=previous_page) }}"><i
-                                class="material-icons">chevron_left</i></a></li>
-                    {% for page in pages %}
-                    <li {% if args('page') %}{% if page|string in args('page') %} class="active waves-effect waves-red"
-                        {% endif %}{% elif page==1 %} class="active waves-effect waves-red"
-                        {% endif %}class="waves-effect"><a
-                            href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=page) }}">{{ loop.index }}</a>
-                    </li>
-                    {% endfor %}
-                    <li {% if args('page')==pages|length|string %} class="disabled" {% endif %} class="waves-effect"><a
-                            href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=next_page) }}"><i
-                                class="material-icons">chevron_right</i></a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </form>
+            </form>
+            {% if results_count %}
+            <h6 class="center-align bold">Results: Showing {{ (page * 8) - 7 }} - {{ count }} of {{ results_count }}
+                matches</h6>
+            {% endif %}
+        </div>
     </div>
-    {% endblock %}
+    <div class="row">
+        {% for recipe in recipes %}
+        {% include "partials/_cards.html" %}
+        {% endfor %}
+    </div>
+    <div>
+        <ul class="pagination center">
+            {% if pages %}
+            <li {% if not request.args or not args('page') or args('page')=='1' %} class="disabled" {% endif %}>
+                <a
+                    href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=previous_page) }}"><i
+                        class="material-icons">chevron_left</i></a></li>
+            {% for page in pages %}
+            <li {% if args('page') %}{% if page|string in args('page') %} class="active waves-effect waves-red"
+                {% endif %}{% elif page==1 %} class="active waves-effect waves-red" {% endif %}class="waves-effect"><a
+                    href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=page) }}">{{ loop.index }}</a>
+            </li>
+            {% endfor %}
+            <li {% if args('page')==pages|length|string %} class="disabled" {% endif %} class="waves-effect"><a
+                    href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=next_page) }}"><i
+                        class="material-icons">chevron_right</i></a></li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

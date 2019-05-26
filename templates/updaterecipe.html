@@ -1,133 +1,135 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-
-    <h3>Edit Recipe</h3>
-
-    <div class="row">
-        <form action="{{ url_for('insert_update', recipe_id=selected_recipe._id) }}" method="POST" class="col s12">
-            <div class="row">
-                <div class="input-field col s12 m6">
-                    <i class="fas fa-pepper-hot prefix"></i>
-                    <select id="cuisineType" name="cuisineType">
-                        <option value="" disabled selected>Choose Cuisine</option>
-                        {% for item in cuisine %}
-                        {% if item == selected_recipe.cuisineType %}
-                        <option value="{{ item }}" selected>{{ item }}</option>
-                        {% else %}
-                        <option value="{{ item }}">{{ item }}</option>
-                        {% endif %}
-                        {% endfor %}
-                    </select>
-                    <label for="cuisineType">Cuisine Type</label>
+<div class="container-main">
+    <div class="card">
+        <h3 class="center-align bold site-blue-text">Edit Recipe</h3>
+        <div class="divider site-blue-bg"></div>
+        <br>
+        <div class="row">
+            <form action="{{ url_for('insert_update', recipe_id=selected_recipe._id) }}" method="POST" class="col s12">
+                <div class="row">
+                    <div class="input-field col s12 m6">
+                        <i class="fas fa-pepper-hot site-blue-text prefix"></i>
+                        <select id="cuisineType" name="cuisineType">
+                            <option value="" disabled selected>Choose Cuisine</option>
+                            {% for item in cuisine %}
+                            {% if item == selected_recipe.cuisineType %}
+                            <option value="{{ item }}" selected>{{ item }}</option>
+                            {% else %}
+                            <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <label for="cuisineType">Cuisine Type</label>
+                    </div>
+                    <div class="input-field col s12 m6">
+                        <i class="fas fa-utensils site-blue-text prefix"></i>
+                        <select id="courseType" name="courseType">
+                            <option value="" disabled selected>Choose Course</option>
+                            {% for item in course %}
+                            {% if item == selected_recipe.courseType %}
+                            <option value="{{ item }}" selected>{{ item }}</option>
+                            {% else %}
+                            <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <label for="courseType">Course Type</label>
+                    </div>
                 </div>
-                <div class="input-field col s12 m6">
-                    <i class="fas fa-utensils prefix"></i>
-                    <select id="courseType" name="courseType">
-                        <option value="" disabled selected>Choose Course</option>
-                        {% for item in course %}
-                        {% if item == selected_recipe.courseType %}
-                        <option value="{{ item }}" selected>{{ item }}</option>
-                        {% else %}
-                        <option value="{{ item }}">{{ item }}</option>
-                        {% endif %}
-                        {% endfor %}
-                    </select>
-                    <label for="courseType">Course Type</label>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="fas fa-file-alt site-blue-text prefix"></i>
+                        <input id="recipe_name" name="recipe_name" type="text" class="validate"
+                            value="{{ selected_recipe.recipeName }}">
+                        <label for="recipe_name">Recipe Name</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <i class="fas fa-file-alt prefix"></i>
-                    <input id="recipe_name" name="recipe_name" type="text" class="validate"
-                        value="{{ selected_recipe.recipeName }}">
-                    <label for="recipe_name">Recipe Name</label>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="fas fa-file-alt site-blue-text prefix"></i>
+                        <input id="recipeDesc" name="recipeDesc" type="text" class="validate"
+                            value="{{ selected_recipe.recipeDesc }}">
+                        <label for="recipeDesc">Recipe Description</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <i class="fas fa-file-alt prefix"></i>
-                    <input id="recipeDesc" name="recipeDesc" type="text" class="validate"
-                        value="{{ selected_recipe.recipeDesc }}">
-                    <label for="recipeDesc">Recipe Description</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <i class="fas fa-clipboard-list prefix"></i>
-                    <textarea name="ingredients" id="ingredients" class="materialize-textarea"
-                        placeholder="Please enter the recipe ingredients, each on a new line.">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="fas fa-clipboard-list site-blue-text prefix"></i>
+                        <textarea name="ingredients" id="ingredients" class="materialize-textarea"
+                            placeholder="Please enter the recipe ingredients, each on a new line.">
                         {% for ing in selected_recipe.ingredients -%}
                         {{ ing }}
                         {% endfor -%}
                     </textarea>
-                    <label for="ingredients">Ingredients</label>
+                        <label for="ingredients">Ingredients</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <i class="fas fa-list-ol prefix"></i>
-                    <textarea name="prepSteps" id="prepSteps" class="materialize-textarea"
-                        placeholder="What are the steps to make this recipe? Add each on a new line.">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="fas fa-list-ol site-blue-text prefix"></i>
+                        <textarea name="prepSteps" id="prepSteps" class="materialize-textarea"
+                            placeholder="What are the steps to make this recipe? Add each on a new line.">
                         {% for step in selected_recipe.prepSteps -%}
                         {{ step }}
                         {% endfor -%}
                     </textarea>
-                    <label for="prepSteps">Preparation Steps</label>
+                        <label for="prepSteps">Preparation Steps</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12 m6 l3">
-                    <i class="fas fa-hourglass-start prefix"></i>
-                    <input id="prepTime" name="prepTime" type="number" class="validate"
-                        value="{{ selected_recipe.prepTime }}">
-                    <label for="prepTime">Prep Time (mins)</label>
+                <div class="row">
+                    <div class="input-field col s12 m6 l3">
+                        <i class="fas fa-hourglass-start site-blue-text prefix"></i>
+                        <input id="prepTime" name="prepTime" type="number" class="validate"
+                            value="{{ selected_recipe.prepTime }}">
+                        <label for="prepTime">Prep Time (mins)</label>
+                    </div>
+                    <div class="input-field col s12 m6 l3">
+                        <i class="fas fa-hourglass-end site-blue-text prefix"></i>
+                        <input id="cookTime" name="cookTime" type="number" class="validate"
+                            value="{{ selected_recipe.cookTime }}">
+                        <label for="cookTime">Cook Time (mins)</label>
+                    </div>
+                    <div class="input-field col s12 m6 l3">
+                        <i class="fas fa-thermometer-three-quarters site-blue-text prefix"></i>
+                        <input id="temp" name="temp" type="number" class="validate" value="{{ selected_recipe.temp }}">
+                        <label for="temp">Temp (°C)</label>
+                    </div>
+                    <div class="input-field col s12 m6 l3">
+                        <select id="allergens" name="allergens" multiple>
+                            <option value="" disabled>List any allergens</option>
+                            {% for item in allergens %}
+                            {% if item in selected_recipe.allergens %}
+                            <option value="{{ item }}" selected>{{ item }}</option>
+                            {% else %}
+                            <option value="{{ item }}">{{ item }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <label for="allergens">Possible Allergens</label>
+                    </div>
                 </div>
-                <div class="input-field col s12 m6 l3">
-                    <i class="fas fa-hourglass-end prefix"></i>
-                    <input id="cookTime" name="cookTime" type="number" class="validate"
-                        value="{{ selected_recipe.cookTime }}">
-                    <label for="cookTime">Cook Time (mins)</label>
+                <div class="row">
+                    <div class="input-field col s12 m6">
+                        <i class="fas fa-images site-blue-text prefix"></i>
+                        <input id="imageUrl" name="imageUrl" type="text" class="validate"
+                            placeholder="Please provide the link to your recipe image."
+                            value="{{ selected_recipe.imgUrl }}">
+                        <label for="imageUrl">Recipe Image</label>
+                    </div>
                 </div>
-                <div class="input-field col s12 m6 l3">
-                    <i class="fas fa-thermometer-three-quarters prefix"></i>
-                    <input id="temp" name="temp" type="number" class="validate" value="{{ selected_recipe.temp }}">
-                    <label for="temp">Temp (°C)</label>
+                <div class="row">
+                    <div class="col s12 center-align">
+                        <button class="btn waves-effect waves-light site-blue-bg" type="submit" name="action">Update Recipe!
+                            <i class="material-icons right">playlist_add</i>
+                        </button>
+                        <button class="btn waves-effect waves-light red" onclick="window.history.back()">Cancel
+                            <i class="material-icons right">cancel</i>
+                        </button>
+                    </div>
                 </div>
-                <div class="input-field col s12 m6 l3">
-                    <select id="allergens" name="allergens" multiple>
-                        <option value="" disabled>List any allergens</option>
-                        {% for item in allergens %}
-                        {% if item in selected_recipe.allergens %}
-                        <option value="{{ item }}" selected>{{ item }}</option>
-                        {% else %}
-                        <option value="{{ item }}">{{ item }}</option>
-                        {% endif %}
-                        {% endfor %}
-                    </select>
-                    <label for="allergens">Possible Allergens</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12 m6">
-                    <i class="fas fa-images prefix"></i>
-                    <input id="imageUrl" name="imageUrl" type="text" class="validate"
-                        placeholder="Please provide the link to your recipe image."
-                        value="{{ selected_recipe.imgUrl }}">
-                    <label for="imageUrl">Recipe Image</label>
-                </div>
-            </div>
-            <div class="row">
-                <button class="btn waves-effect waves-light" type="submit" name="action">Update Recipe!
-                    <i class="material-icons right">playlist_add</i>
-                </button>
-            </div>
-        </form>
-        <div class="row">
-            <button class="btn waves-effect waves-light" onclick="window.history.back()">Cancel
-                <i class="material-icons right">cancel</i>
-            </button>
+            </form>
         </div>
     </div>
-{% endblock %}
 </div>
+{% endblock %}
