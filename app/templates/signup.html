@@ -6,7 +6,7 @@
         <h3 class="center-align site-blue-text bold">Sign-up</h3>
         <div class="divider site-blue-bg"></div>
         <br>
-        <form action="{{ url_for('signup') }}" method="POST" class="col s12">
+        <form action="{{ url_for('users.signup') }}" method="POST" class="col s12">
             <div class="row">
                 <div class="input-field col s12 offset-m3 m6 offset-l3 l6">
                     <i class="fas fa-user site-blue-text prefix"></i>
@@ -48,5 +48,4 @@
     </form>
 </div>
 </div>
-
 {% endblock %}

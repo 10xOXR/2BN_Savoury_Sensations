@@ -1,0 +1,35 @@
+<nav>
+    <div class="nav-wrapper container-nav">
+        <a href="{{ url_for('main.landing_page') }}" class="brand-logo">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+        </a>
+        <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{ url_for('main.landing_page') }}">Home</a></li>
+            <li><a href="{{ url_for('recipes.show_recipes') }}">Browse Recipes</a></li>
+            <li><a href="{{ url_for('recipes.search_recipes', skip=0) }}">Search</a></li>
+            {% if session.user %}
+            <li><a href="{{ url_for('recipes.add_recipe') }}">Add Recipe</a></li>
+            <li><a href="{{ url_for('users.profile', username = session.user) }}">Profile</a></li>
+            <li><a href="{{ url_for('users.logout') }}">Logout</a></li>
+            {% else %}
+            <li><a href="{{ url_for('users.signup') }}">Sign Up</a></li>
+            <li><a href="{{ url_for('users.login') }}">Log In</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<ul class="sidenav" id="mobile-demo">
+    <li><a href="{{ url_for('main.landing_page') }}">Home</a></li>
+    <li><a href="{{ url_for('recipes.show_recipes') }}">Browse Recipes</a></li>
+    <li><a href="{{ url_for('recipes.search_recipes', skip=0) }}">Search</a></li>
+    {% if session.user %}
+    <li><a href="{{ url_for('recipes.add_recipe') }}">Add Recipe</a></li>
+    <li><a href="{{ url_for('users.profile', username = session.user) }}">Profile</a></li>
+    <li><a href="{{ url_for('users.logout') }}">Logout</a></li>
+    {% else %}
+    <li><a href="{{ url_for('users.signup') }}">Sign Up</a></li>
+    <li><a href="{{ url_for('users.login') }}">Log In</a></li>
+    {% endif %}
+</ul>

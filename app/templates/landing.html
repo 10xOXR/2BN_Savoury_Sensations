@@ -8,10 +8,10 @@
                 <h4 class="bold site-blue-text">Welcome to<br>2BN Savoury Sensations!</h4>
                 <p>There’s a time and place for good food, and here you’ll find everything that you need to make
                     mouth-watering meals with the minimum of fuss!</p>
-                <p>Feel free to <a class="bold site-blue-text" href="{{ url_for('show_recipes') }}">browse</a> our delicious recipes,
-                    or <a class="bold site-blue-text" href="{{ url_for('signup') }}">sign-up</a> and add your own culinary creations.
+                <p>Feel free to <a class="bold site-blue-text" href="{{ url_for('recipes.show_recipes') }}">browse</a> our delicious recipes,
+                    or <a class="bold site-blue-text" href="{{ url_for('users.signup') }}">sign-up</a> and add your own culinary creations.
                 </p>
-                <p>Already a member? <a class="bold site-blue-text" href="{{ url_for('login') }}">Log-in</a> and find your favourites waiting for you.</p>
+                <p>Already a member? <a class="bold site-blue-text" href="{{ url_for('users.login') }}">Log-in</a> and find your favourites waiting for you.</p>
                 <p>Come on in and get cooking!</p>
             </div>
         </div>
@@ -23,7 +23,7 @@
                         <h5 class="bold site-blue-text">{{ recipe.recipeName }}</h5>
                         <p class="truncate bold">{{ recipe.recipeDesc }}</p>
                         <a class="btn waves-effect darken-text-2"
-                            href="{{ url_for('recipe_detail', recipe_id=recipe._id) }}">View Recipe</a>
+                            href="{{ url_for('recipes.recipe_detail', recipe_id=recipe._id) }}">View Recipe</a>
                     </div>
                     {% if recipe.imgUrl %}
                     <img class="activator" src="{{ recipe.imgUrl }}">

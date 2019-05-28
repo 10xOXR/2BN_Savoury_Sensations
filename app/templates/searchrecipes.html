@@ -69,7 +69,7 @@
                         <button class="btn waves-effect waves-light site-blue-bg" type="submit">Search
                             <i class="fas fa-search left"></i>
                         </button>
-                        <a class="btn waves-effect waves-light site-blue-bg" href="{{ url_for('search_recipes') }}"><i
+                        <a class="btn waves-effect waves-light site-blue-bg" href="{{ url_for('recipes.search_recipes') }}"><i
                                 class="fas fa-undo-alt left"></i>Reset</a>
                     </div>
                 </div>
@@ -90,16 +90,16 @@
             {% if pages %}
             <li {% if not request.args or not args('page') or args('page')=='1' %} class="disabled" {% endif %}>
                 <a
-                    href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=previous_page) }}"><i
+                    href="{{ url_for('recipes.search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=previous_page) }}"><i
                         class="material-icons">chevron_left</i></a></li>
             {% for page in pages %}
             <li {% if args('page') %}{% if page|string in args('page') %} class="active waves-effect waves-red"
                 {% endif %}{% elif page==1 %} class="active waves-effect waves-red" {% endif %}class="waves-effect"><a
-                    href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=page) }}">{{ loop.index }}</a>
+                    href="{{ url_for('recipes.search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=page) }}">{{ loop.index }}</a>
             </li>
             {% endfor %}
             <li {% if args('page')==pages|length|string %} class="disabled" {% endif %} class="waves-effect"><a
-                    href="{{ url_for('search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=next_page) }}"><i
+                    href="{{ url_for('recipes.search_recipes', search_keys=args('search_keys'), cuisine_filter=args('cuisine_filter'), course_filter=args('course_filter'), allergen_filter=args('allergen_filter'), page=next_page) }}"><i
                         class="material-icons">chevron_right</i></a></li>
             {% endif %}
         </ul>

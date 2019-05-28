@@ -98,14 +98,14 @@
         {% if session.user %}
         {% if recipe._id in favourites %}
         <a class="waves-effect waves-light btn blue"
-            href="{{ url_for('remove_favourite', recipe_id=recipe._id) }}">Remove Favourite</a>
+            href="{{ url_for('recipes.remove_favourite', recipe_id=recipe._id) }}">Remove Favourite</a>
         {% else %}
-        <a class="waves-effect waves-light btn" href="{{ url_for('add_favourite', recipe_id=recipe._id) }}">Add
+        <a class="waves-effect waves-light btn" href="{{ url_for('recipes.add_favourite', recipe_id=recipe._id) }}">Add
             Favourite</a>
         {% endif %}
         {% if session.user == author|lower or 'admin' %}
         <a class="waves-effect waves-light btn orange text-shadow"
-            href="{{ url_for('update_recipe', recipe_id=recipe._id) }}">Edit</a>
+            href="{{ url_for('recipes.update_recipe', recipe_id=recipe._id) }}">Edit</a>
         <a class="waves-effect waves-light red btn text-shadow modal-trigger" href="#modal-delete">Delete</a>
         {% endif %}
         {% endif %}
@@ -117,7 +117,7 @@
     <div class="modal-content center-align">
         <h4 class="red-text bold">Delete Recipe</h4>
         <h5>Are you sure? This can't be undone.</h5>
-    <a class="waves-effect waves-light red btn " href="{{ url_for('delete_recipe', recipe_id=recipe._id) }}">Delete
+    <a class="waves-effect waves-light red btn " href="{{ url_for('recipes.delete_recipe', recipe_id=recipe._id) }}">Delete
         Recipe</a>
     <a href="#!" class="modal-close waves-effect waves-light btn">Cancel</a>
 </div>

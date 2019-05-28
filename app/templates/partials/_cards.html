@@ -9,7 +9,7 @@
             <span class="card-title">{{ recipe.recipeName }}</span>
         </div>
         <div class="card-action">
-            <a class="site-blue-text bold" href="{{ url_for('recipe_detail', recipe_id=recipe._id) }}">View Recipe</a>
+            <a class="site-blue-text bold" href="{{ url_for('recipes.recipe_detail', recipe_id=recipe._id) }}">View Recipe</a>
             <p><i class="fas fa-eye"></i> {{ recipe.views }}</p>
             <p><i class="fas fa-heart red-text"></i> {{ recipe.favourites }}</p>
         </div>
@@ -19,7 +19,6 @@
                 <span class="grey-text text-darken-4 bold">{{ recipe.recipeName }}
                 </span>
             </h5>
-
             <p>{{ recipe.recipeDesc }}</p>
         </div>
     </div>
