@@ -6,20 +6,21 @@ from app.config import Config
 
 mongo = PyMongo()
 
-def create_app(config_class=Config):
-	app = Flask(__name__)
-	app.config.from_object(Config)
-	mongo.init_app(app)
-	app.jinja_env.trim_blocks = True
-	app.jinja_env.lstrip_blocks = True
-	from app.users.routes import users
-	from app.main.routes import main
-	from app.recipes.routes import recipes
-	app.register_blueprint(users)
-	app.register_blueprint(main)
-	app.register_blueprint(recipes)
 
-	csp = {
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    mongo.init_app(app)
+    app.jinja_env.trim_blocks = True
+    app.jinja_env.lstrip_blocks = True
+    from app.users.routes import users
+    from app.main.routes import main
+    from app.recipes.routes import recipes
+    app.register_blueprint(users)
+    app.register_blueprint(main)
+    app.register_blueprint(recipes)
+
+    csp = {
         'default-src': [
             '\'unsafe-inline\' \'self\'',
             '*.cloudflare.com',
@@ -37,6 +38,6 @@ def create_app(config_class=Config):
         ]
     }
 
-	Talisman(app, content_security_policy=csp)
+    Talisman(app, content_security_policy=csp)
 
-	return app
+    return app

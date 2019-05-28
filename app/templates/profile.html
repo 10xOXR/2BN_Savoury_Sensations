@@ -20,7 +20,7 @@
     <div class="row">
         <div class="col s12">
             <a class="waves-effect waves-light btn site-blue-bg"
-                href="{{ url_for('change_password', username = session.user) }}">Change
+                href="{{ url_for('users.change_password', username = session.user) }}">Change
                 Password</a>
             <a class="waves-effect waves-light btn red modal-trigger" href="#modal-delete" {% set modal = True %}>Delete
                 Account</a>
