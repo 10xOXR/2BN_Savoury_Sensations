@@ -4,6 +4,7 @@ from flask import (
     session, Blueprint, current_app)
 from bson.objectid import ObjectId
 from app import mongo
+from app.helpers import Helpers
 
 recipes = Blueprint("recipes", __name__)
 
@@ -13,35 +14,6 @@ coll_users = mongo.db.users
 coll_cuisines = mongo.db.cuisines
 coll_courses = mongo.db.courses
 coll_allergens = mongo.db.allergens
-
-# Helper functions
-
-
-def dropdowns(list1, list2, list3):
-    for types in coll_cuisines.find():
-        cuisine_type = types.get("cuisineType")
-        for item in cuisine_type:
-            list1.append(item)
-    for types in coll_courses.find():
-        course_type = types.get("courseType")
-        for item in course_type:
-            list2.append(item)
-    for types in coll_allergens.find():
-        allergen_type = types.get("allergenType")
-        for item in allergen_type:
-            list3.append(item)
-
-
-def pagination(recipe_args, page_args, collection):
-    page_count = range(1, (math.ceil(recipe_args.count() / 8)) + 1)
-    pages = [page for page in page_count]
-    previous_page = page_args - 1 if page_args != 1 else 1
-    next_page = page_args + 1 if page_args < pages[-1] else page_args
-    count = (
-        page_args * 8 if (page_args * 8) < recipe_args.count() else
-        recipe_args.count())
-    total_recipes = collection.count()
-    return pages, previous_page, next_page, count, total_recipes
 
 
 # Show All Recipes Page
@@ -66,12 +38,13 @@ def show_recipes():
         [(sort_type, order_type)])
 
     # Pagination
-    pages, previous_page, next_page, count, total_recipes = pagination(
+    pages, previous_page, next_page, count, total_recipes, recipe_count = Helpers.pagination(
         sort, page_args, coll_recipes)
 
     return render_template(
         "showrecipes.html",
         recipes=sort,
+        recipe_count=recipe_count,
         total_recipes=total_recipes,
         count=count,
         pages=pages,
@@ -87,10 +60,7 @@ def add_recipe():
     Renders the Add Recipe page, populates dropdowns and
     passes everything to the template.
     """
-    cuisine = []
-    course = []
-    allergens = []
-    dropdowns(cuisine, course, allergens)
+    cuisine, course, allergens = Helpers.dropdowns(coll_cuisines, coll_courses, coll_allergens)
     return render_template(
         "addrecipe.html",
         cuisine=sorted(cuisine),
@@ -219,12 +189,12 @@ def update_recipe(recipe_id):
     recipe's details to the template to pre-populate all of
     the fields.
     """
-    cuisine = []
-    course = []
-    allergens = []
+    #cuisine = []
+    #course = []
+    #allergens = []
     selected_recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
     steps = selected_recipe.get("prepSteps")
-    dropdowns(cuisine, course, allergens)
+    cuisine, course, allergens = Helpers.dropdowns(coll_cuisines, coll_courses, coll_allergens)
     return render_template(
         "updaterecipe.html",
         selected_recipe=selected_recipe,
@@ -294,10 +264,7 @@ def search_recipes():
     keywords, and dropdowns. Returns the results to the template with info
     on how many results were returned.
     """
-    cuisine = []
-    course = []
-    allergens = []
-    dropdowns(cuisine, course, allergens)
+    cuisine, course, allergens = Helpers.dropdowns(coll_cuisines, coll_courses, coll_allergens)
     args = request.args.get
     args_list = request.args.getlist
 
@@ -334,20 +301,10 @@ def search_recipes():
         .limit(8).sort([("views", -1)])
 
     # Pagination
-    page_count = (
-        range(1, (math.ceil(search_results.count() / 8)) + 1)
-        if search_results.count() != 0 else "")
-    pages = [page for page in page_count] if page_count != "" else []
-    previous_page = page_args - 1 if page_args != 1 else 1
-    if page_count == "" or pages == []:
-        next_page = ""
-    else:
-        next_page = page_args + 1 if page_args < pages[-1] else page_args
-
-    # Running count of displayed recipes on Search Page
-    count = (
-        page_args * 8 if (page_args * 8) < search_results.count()
-        else search_results.count())
+    (
+        pages, previous_page, next_page, count,
+        total_recipes, results_count) = Helpers.pagination(
+        search_results, page_args, coll_recipes)
 
     return render_template(
         "searchrecipes.html",
@@ -360,7 +317,8 @@ def search_recipes():
         f_course=courseFilter_args,
         f_allergen=allergenFilter_args,
         pages=pages,
-        results_count=search_results.count(),
+        results_count=results_count,
+        total_recipes=total_recipes,
         count=count,
         page=page_args,
         next_page=next_page,
