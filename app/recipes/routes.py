@@ -189,9 +189,6 @@ def update_recipe(recipe_id):
     recipe's details to the template to pre-populate all of
     the fields.
     """
-    #cuisine = []
-    #course = []
-    #allergens = []
     selected_recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
     steps = selected_recipe.get("prepSteps")
     cuisine, course, allergens = Helpers.dropdowns(coll_cuisines, coll_courses, coll_allergens)
@@ -213,32 +210,33 @@ def insert_update(recipe_id):
     overwriting the original, and redirects back to the Recipe
     Detail page.
     """
-    recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
-    ingredients = request.form.get("ingredients").splitlines()
-    prepSteps = request.form.get("prepSteps").splitlines()
-    author = recipe.get("author")
-    currentViews = recipe.get("views")
-    currentFavs = recipe.get("favourites")
-    coll_recipes.update({"_id": ObjectId(recipe_id)}, {
-        "cuisineType": request.form.get("cuisineType"),
-        "courseType": request.form.get("courseType"),
-        "recipeName": request.form.get("recipe_name"),
-        "recipeDesc": request.form.get("recipeDesc"),
-        "ingredients": ingredients,
-        "prepSteps": prepSteps,
-        "prepTime": request.form.get("prepTime"),
-        "cookTime": request.form.get("cookTime"),
-        "temp": request.form.get("temp"),
-        "allergens": request.form.getlist("allergens"),
-        "imgUrl": request.form.get("imageUrl"),
-        "author": author,
-        "views": currentViews,
-        "favourites": currentFavs
-    })
-    flash("Thank you! Your update has been submitted!")
-    return redirect(url_for(
-        "recipes.recipe_detail",
-        recipe_id=recipe_id))
+    if request.method == "POST":
+        recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
+        ingredients = request.form.get("ingredients").splitlines()
+        prepSteps = request.form.get("prepSteps").splitlines()
+        author = recipe.get("author")
+        currentViews = recipe.get("views")
+        currentFavs = recipe.get("favourites")
+        coll_recipes.update({"_id": ObjectId(recipe_id)}, {
+            "cuisineType": request.form.get("cuisineType"),
+            "courseType": request.form.get("courseType"),
+            "recipeName": request.form.get("recipe_name"),
+            "recipeDesc": request.form.get("recipeDesc"),
+            "ingredients": ingredients,
+            "prepSteps": prepSteps,
+            "prepTime": request.form.get("prepTime"),
+            "cookTime": request.form.get("cookTime"),
+            "temp": request.form.get("temp"),
+            "allergens": request.form.getlist("allergens"),
+            "imgUrl": request.form.get("imageUrl"),
+            "author": author,
+            "views": currentViews,
+            "favourites": currentFavs
+        })
+        flash(f"Thank you! Your update has been submitted!")
+        return redirect(url_for(
+            "recipes.recipe_detail",
+            recipe_id=recipe_id))
 
 
 # Delete Recipe Function
