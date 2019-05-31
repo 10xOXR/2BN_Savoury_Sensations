@@ -28,22 +28,24 @@
     </div>
 </div>
 
-<div class="row container-main">
-    <div class="col s12">
-        <ul class="tabs">
-            <li class="tab tabs-fixed-width col s6 bold site-blue-text"><a class="active" href="#favs">Favourites</a>
+<div class="row container-main white">
+        <ul class="tabs tabs-fixed-width">
+            <li class="tab col s6 bold site-blue-text"><a class="active" href="#favs">Favourites</a>
             </li>
-            <li class="tab tabs-fixed-width col s6 bold site-blue-text"><a href="#ownRecipes">My Recipes</a></li>
+            <li class="tab col s6 bold site-blue-text"><a href="#ownRecipes">My Recipes</a></li>
         </ul>
-    </div>
     <div id="favs" class="row">
         {% for recipe in favs %}
-        {% include "partials/_cards.html" %}
+            {% include "partials/_cards.html" %}
+        {% else %}
+            <h5 class="site-blue-text bold center-align">Browse our recipes, save everything that looks yummy, and it will appear here for you!</h5>
         {% endfor %}
     </div>
     <div id="ownRecipes" class="row">
         {% for recipe in own_rec %}
-        {% include "partials/_cards.html" %}
+            {% include "partials/_cards.html" %}
+        {% else %}
+            <h5 class="site-blue-text bold center-align">This is where you'll see all of the tasty creations you've shared with everyone!</h5>
         {% endfor %}
     </div>
 </div>

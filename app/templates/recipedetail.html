@@ -103,7 +103,7 @@
         <a class="waves-effect waves-light btn" href="{{ url_for('recipes.add_favourite', recipe_id=recipe._id) }}">Add
             Favourite</a>
         {% endif %}
-        {% if session.user == author|lower or 'admin' %}
+        {% if session.user == author|lower or session.user == 'admin' %}
         <a class="waves-effect waves-light btn orange text-shadow"
             href="{{ url_for('recipes.update_recipe', recipe_id=recipe._id) }}">Edit</a>
         <a class="waves-effect waves-light red btn text-shadow modal-trigger" href="#modal-delete">Delete</a>
