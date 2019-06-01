@@ -38,7 +38,7 @@
         {% for recipe in favs %}
             {% include "partials/_cards.html" %}
         {% else %}
-            <h5 class="site-blue-text bold center-align">Browse our recipes, save everything that looks yummy, and it will appear here for you!</h5>
+            <h5 class="site-blue-text bold center-align"><a href="{{ url_for('recipes.show_recipes') }}">Browse our recipes</a>, save everything that looks yummy, and it will appear here for you!</h5>
         {% endfor %}
     </div>
     <div id="ownRecipes" class="row">
