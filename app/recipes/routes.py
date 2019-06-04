@@ -251,6 +251,7 @@ def delete_recipe(recipe_id):
     coll_users.update_one(
         {"_id": ObjectId(user)},
         {"$pull": {"user_recipes": ObjectId(recipe_id)}})
+    coll_users.update_many({}, {"$pull": {"user_favs": ObjectId(recipe_id)}})
     return redirect(url_for("recipes.show_recipes"))
 
 
