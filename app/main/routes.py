@@ -18,5 +18,5 @@ def landing_page():
     # Select 5 random recipes from the database to use in the
     # homepage carousel
     slideshow = [recipe for recipe in coll_recipes.aggregate(
-            [{"$sample": {"size": 5}}])]
+        [{"$sample": {"size": 5}}])]
     return render_template("landing.html", slideshow=slideshow)

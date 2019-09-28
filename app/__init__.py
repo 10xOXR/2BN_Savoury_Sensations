@@ -9,7 +9,7 @@ mongo = PyMongo()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config_class)
     mongo.init_app(app)
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
