@@ -246,10 +246,10 @@ def delete_recipe(recipe_id):
     Deletes the selected recipe, removes it from the user's
     favourites, and redirects to display all recipes.
     """
-    user = coll_users.find_one({"username_lower": session["user"]})["_id"]
+    author = coll_recipes.find_one({"_id": ObjectId(recipe_id)})["author"]
     coll_recipes.remove({"_id": ObjectId(recipe_id)})
     coll_users.update_one(
-        {"_id": ObjectId(user)},
+        {"_id": ObjectId(author)},
         {"$pull": {"user_recipes": ObjectId(recipe_id)}})
     return redirect(url_for("recipes.show_recipes"))
 
