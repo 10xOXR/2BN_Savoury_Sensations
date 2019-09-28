@@ -2,11 +2,6 @@
 
 <img src="https://github.com/10xOXR/2BN_Savoury_Sensations/blob/master/design/mockups.png" alt="2BN-Savoury-Sensations" width="800">
 
-<<<<<<< HEAD
-
-We all need food, so why not make the experience something wonderful; something worth remembering? 2BN Savoury Sensations was created to help serve that purpose by bringing together the tastiest savoury recipes from around the world! 
-=======
->>>>>>> c8d621a918d3a8240edcf049682a2a3dd10c96d1
 
 We all need food, so why not make the experience something wonderful; something worth remembering? 2BN Savoury Sensations was created to help serve that purpose by bringing together the tastiest savoury recipes from around the world! 
 ---
@@ -78,11 +73,7 @@ Frameworks used in the project are:
 
  - [Materialize 1.0.0](https://materializecss.com/)
     - Using the Materialize framework allowed for the development of a clean and modern user interface with minimal need to override or alter the default settings in most cases.
-<<<<<<< HEAD
-- [Flask 1.0.2](https://www.djangoproject.com/)
-=======
 - [Flask 1.0.2](http://flask.pocoo.org/)
->>>>>>> c8d621a918d3a8240edcf049682a2a3dd10c96d1
     - Flask is used as the templating micro-framework that renders all pages on the site.
 - [jQuery 3.3.1](https://code.jquery.com/jquery/)
     - Although mostly unbound from jQuery in version 1.0.0, Materialize still requires some jQuery in order to properly initialize its elements (such as dropdowns, carousels, etc.). It is also used for custom functions, including  as part of custom recipe sorting.
