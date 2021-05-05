@@ -1,4 +1,5 @@
 import random
+import re
 from flask import (
     render_template, redirect, request, url_for, flash,
     session, Blueprint, current_app)
@@ -39,6 +40,21 @@ def signup():
         if len(request.form.get("username")) < 5 or len(request.form.get(
                 "username")) > 15:
             flash("Usernames should be 5 - 15 characters long.")
+            return render_template("signup.html")
+
+        # Check there are no spaces or special chars in the username
+        username_input = request.form.get("username").lower()
+        username_check = re.search(r"(?!\-)[\W]+|t+e+s+t+", username_input, re.I)
+        if username_check:
+            flash(f"Usernames containing spaces or {username_check.group(0).upper()}\
+                are not permitted!")
+            return render_template("signup.html")
+
+        # Check that passwords do not contain only spaces
+        password_input = request.form.get("password")
+        password_check = re.search(r"\s+", password_input, re.I)
+        if password_check:
+            flash(f"Passwords containing spaces are not permitted!")
             return render_template("signup.html")
 
         # Check length of passwords and flash error if outside limits
