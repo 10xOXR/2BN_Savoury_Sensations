@@ -21,6 +21,7 @@ instance/
 
 ENV
 env
+env.py
 env/
 .env
 env.bak/
