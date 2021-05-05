@@ -60,16 +60,20 @@ def add_recipe():
     Renders the Add Recipe page, populates dropdowns and
     passes everything to the template.
     """
-    cuisine, course, allergens = Helpers.dropdowns(coll_cuisines, coll_courses, coll_allergens)
-    return render_template(
-        "addrecipe.html",
-        cuisine=sorted(cuisine),
-        course=course,
-        allergens=allergens)
+    if "user" in session:
+        cuisine, course, allergens = Helpers.dropdowns(coll_cuisines, coll_courses, coll_allergens)
+        return render_template(
+            "addrecipe.html",
+            cuisine=sorted(cuisine),
+            course=course,
+            allergens=allergens)
+    else:
+        flash("You must be logged in to view this page!")
+        return redirect(url_for("users.login"))
 
 
 # Add Recipe - Insert Recipe Function
-@recipes.route("/insert_recipe", methods=["POST"])
+@recipes.route("/insert_recipe", methods=["GET", "POST"])
 def insert_recipe():
     """
     Takes all values from the recipe form and builds a recipe
@@ -77,38 +81,41 @@ def insert_recipe():
     and redirects user to the Recipe Detail page for the new
     recipe.
     """
+    if "user" in session:
+        author = coll_users.find_one({"username_lower": session["user"]})["_id"]
+        # Split the ingredients and preparation steps into lists
 
-    author = coll_users.find_one({"username_lower": session["user"]})["_id"]
-    # Split the ingredients and preparation steps into lists
+        ingredients = request.form.get("ingredients").splitlines()
+        prepSteps = request.form.get("prepSteps").splitlines()
 
-    ingredients = request.form.get("ingredients").splitlines()
-    prepSteps = request.form.get("prepSteps").splitlines()
-
-    # Recipe JSON object
-    submission = {
-        "cuisineType": request.form.get("cuisineType"),
-        "courseType": request.form.get("courseType"),
-        "recipeName": request.form.get("recipe_name"),
-        "recipeDesc": request.form.get("recipeDesc"),
-        "ingredients": ingredients,
-        "prepSteps": prepSteps,
-        "prepTime": request.form.get("prepTime"),
-        "cookTime": request.form.get("cookTime"),
-        "temp": request.form.get("temp"),
-        "allergens": request.form.getlist("allergens"),
-        "imgUrl": request.form.get("imageUrl"),
-        "author": author,
-        "views": 0,
-        "favourites": 0
-    }
-    insertRecipe = coll_recipes.insert_one(submission)
-    coll_users.update_one(
-        {"_id": ObjectId(author)},
-        {"$push": {"user_recipes": insertRecipe.inserted_id}})
-    flash("Thank you! Your recipe has been submitted!")
-    return redirect(url_for(
-        "recipes.recipe_detail",
-        recipe_id=insertRecipe.inserted_id))
+        # Recipe JSON object
+        submission = {
+            "cuisineType": request.form.get("cuisineType"),
+            "courseType": request.form.get("courseType"),
+            "recipeName": request.form.get("recipe_name"),
+            "recipeDesc": request.form.get("recipeDesc"),
+            "ingredients": ingredients,
+            "prepSteps": prepSteps,
+            "prepTime": request.form.get("prepTime"),
+            "cookTime": request.form.get("cookTime"),
+            "temp": request.form.get("temp"),
+            "allergens": request.form.getlist("allergens"),
+            "imgUrl": request.form.get("imageUrl"),
+            "author": author,
+            "views": 0,
+            "favourites": 0
+        }
+        insertRecipe = coll_recipes.insert_one(submission)
+        coll_users.update_one(
+            {"_id": ObjectId(author)},
+            {"$push": {"user_recipes": insertRecipe.inserted_id}})
+        flash("Thank you! Your recipe has been submitted!")
+        return redirect(url_for(
+            "recipes.recipe_detail",
+            recipe_id=insertRecipe.inserted_id))
+    else:
+        flash("You must be logged in to perform that action!")
+        return redirect(url_for("users.login"))
 
 
 # Recipe Detail Page
@@ -151,17 +158,20 @@ def add_favourite(recipe_id):
     Takes the current recipe ID and inserts it into the favourites
     field in their user record.
     """
-    user = coll_users.find_one(
-        {"username_lower": session["user"]})["_id"]
-    coll_users.update_one(
-        {"_id": ObjectId(user)},
-        {"$push": {"user_favs": ObjectId(recipe_id)}})
-    coll_recipes.update(
-        {"_id": ObjectId(recipe_id)}, {"$inc": {"favourites": 1}})
-    return redirect(url_for(
-        "recipes.recipe_detail",
-        recipe_id=recipe_id))
-
+    if "user" in session:
+        user = coll_users.find_one(
+            {"username_lower": session["user"]})["_id"]
+        coll_users.update_one(
+            {"_id": ObjectId(user)},
+            {"$push": {"user_favs": ObjectId(recipe_id)}})
+        coll_recipes.update(
+            {"_id": ObjectId(recipe_id)}, {"$inc": {"favourites": 1}})
+        return redirect(url_for(
+            "recipes.recipe_detail",
+            recipe_id=recipe_id))
+    else:
+        flash("You must be logged in to perform that action!")
+        return redirect(url_for("users.login"))
 
 # Remove Favourite Function
 @recipes.route("/remove_favourite/<recipe_id>")
@@ -170,16 +180,19 @@ def remove_favourite(recipe_id):
     Takes the current recipe ID and removes it from the the user's
     favourites. Only available if the favourite exists.
     """
-    user = coll_users.find_one({"username_lower": session["user"]})["_id"]
-    coll_users.update_one(
-        {"_id": ObjectId(user)},
-        {"$pull": {"user_favs": ObjectId(recipe_id)}})
-    coll_recipes.update(
-        {"_id": ObjectId(recipe_id)}, {"$inc": {"favourites": -1}})
-    return redirect(url_for(
-        "recipes.recipe_detail",
-        recipe_id=recipe_id))
-
+    if "user" in session:
+        user = coll_users.find_one({"username_lower": session["user"]})["_id"]
+        coll_users.update_one(
+            {"_id": ObjectId(user)},
+            {"$pull": {"user_favs": ObjectId(recipe_id)}})
+        coll_recipes.update(
+            {"_id": ObjectId(recipe_id)}, {"$inc": {"favourites": -1}})
+        return redirect(url_for(
+            "recipes.recipe_detail",
+            recipe_id=recipe_id))
+    else:
+        flash("You must be logged in to perform that action!")
+        return redirect(url_for("users.login"))
 
 # Update Recipe Page
 @recipes.route("/update_recipe/<recipe_id>")
@@ -189,20 +202,28 @@ def update_recipe(recipe_id):
     recipe's details to the template to pre-populate all of
     the fields.
     """
-    selected_recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
-    steps = selected_recipe.get("prepSteps")
-    cuisine, course, allergens = Helpers.dropdowns(coll_cuisines, coll_courses, coll_allergens)
-    return render_template(
-        "updaterecipe.html",
-        selected_recipe=selected_recipe,
-        cuisine=sorted(cuisine),
-        course=course,
-        allergens=allergens,
-        steps=steps)
-
+    if "user" in session:
+        selected_recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
+        user = coll_users.find_one({"username_lower": session["user"]})["_id"]
+        if user == selected_recipe.get("author"):
+            steps = selected_recipe.get("prepSteps")
+            cuisine, course, allergens = Helpers.dropdowns(coll_cuisines, coll_courses, coll_allergens)
+            return render_template(
+                "updaterecipe.html",
+                selected_recipe=selected_recipe,
+                cuisine=sorted(cuisine),
+                course=course,
+                allergens=allergens,
+                steps=steps)
+        else:
+            flash("You are not authorised to perform that action!")
+            return redirect(url_for("recipes.recipe_detail", recipe_id=recipe_id))
+    else:
+        flash("You must be logged in to perform that action!")
+        return redirect(url_for("users.login"))
 
 # Update Recipe - Insert Update Function
-@recipes.route("/insert_update/<recipe_id>", methods=["POST"])
+@recipes.route("/insert_update/<recipe_id>", methods=["GET", "POST"])
 def insert_update(recipe_id):
     """
     Takes all values from the recipe form and builds a recipe
@@ -210,33 +231,44 @@ def insert_update(recipe_id):
     overwriting the original, and redirects back to the Recipe
     Detail page.
     """
-    if request.method == "POST":
-        recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
-        ingredients = request.form.get("ingredients").splitlines()
-        prepSteps = request.form.get("prepSteps").splitlines()
-        author = recipe.get("author")
-        currentViews = recipe.get("views")
-        currentFavs = recipe.get("favourites")
-        coll_recipes.update({"_id": ObjectId(recipe_id)}, {
-            "cuisineType": request.form.get("cuisineType"),
-            "courseType": request.form.get("courseType"),
-            "recipeName": request.form.get("recipe_name"),
-            "recipeDesc": request.form.get("recipeDesc"),
-            "ingredients": ingredients,
-            "prepSteps": prepSteps,
-            "prepTime": request.form.get("prepTime"),
-            "cookTime": request.form.get("cookTime"),
-            "temp": request.form.get("temp"),
-            "allergens": request.form.getlist("allergens"),
-            "imgUrl": request.form.get("imageUrl"),
-            "author": author,
-            "views": currentViews,
-            "favourites": currentFavs
-        })
-        flash(f"Thank you! Your update has been submitted!")
-        return redirect(url_for(
-            "recipes.recipe_detail",
-            recipe_id=recipe_id))
+    if "user" in session:
+        selected_recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
+        user = coll_users.find_one({"username_lower": session["user"]})["_id"]
+        if user == selected_recipe.get("author"):
+            if request.method == "POST":
+                recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
+                ingredients = request.form.get("ingredients").splitlines()
+                prepSteps = request.form.get("prepSteps").splitlines()
+                author = recipe.get("author")
+                currentViews = recipe.get("views")
+                currentFavs = recipe.get("favourites")
+                coll_recipes.update({"_id": ObjectId(recipe_id)}, {
+                    "cuisineType": request.form.get("cuisineType"),
+                    "courseType": request.form.get("courseType"),
+                    "recipeName": request.form.get("recipe_name"),
+                    "recipeDesc": request.form.get("recipeDesc"),
+                    "ingredients": ingredients,
+                    "prepSteps": prepSteps,
+                    "prepTime": request.form.get("prepTime"),
+                    "cookTime": request.form.get("cookTime"),
+                    "temp": request.form.get("temp"),
+                    "allergens": request.form.getlist("allergens"),
+                    "imgUrl": request.form.get("imageUrl"),
+                    "author": author,
+                    "views": currentViews,
+                    "favourites": currentFavs
+                })
+                flash(f"Thank you! Your update has been submitted!")
+                return redirect(url_for(
+                    "recipes.recipe_detail",
+                    recipe_id=recipe_id))
+            return redirect(url_for("recipes.recipe_detail", recipe_id=recipe_id))
+        else:
+            flash("You are not authorised to perform that action!")
+            return redirect(url_for("recipes.recipe_detail", recipe_id=recipe_id))
+    else:
+        flash("You must be logged in to perform that action!")
+        return redirect(url_for("users.login"))
 
 
 # Delete Recipe Function
@@ -246,14 +278,23 @@ def delete_recipe(recipe_id):
     Deletes the selected recipe, removes it from the user's
     favourites, and redirects to display all recipes.
     """
-    author = coll_recipes.find_one({"_id": ObjectId(recipe_id)})["author"]
-    coll_recipes.remove({"_id": ObjectId(recipe_id)})
-    coll_users.update_one(
-        {"_id": ObjectId(author)},
-        {"$pull": {"user_recipes": ObjectId(recipe_id)}})
-    coll_users.update_many({}, {"$pull": {"user_favs": ObjectId(recipe_id)}})
-    return redirect(url_for("recipes.show_recipes"))
-
+    if "user" in session:
+        selected_recipe = coll_recipes.find_one({"_id": ObjectId(recipe_id)})
+        user = coll_users.find_one({"username_lower": session["user"]})["_id"]
+        if user == selected_recipe.get("author"):
+            author = coll_recipes.find_one({"_id": ObjectId(recipe_id)})["author"]
+            coll_recipes.remove({"_id": ObjectId(recipe_id)})
+            coll_users.update_one(
+                {"_id": ObjectId(author)},
+                {"$pull": {"user_recipes": ObjectId(recipe_id)}})
+            coll_users.update_many({}, {"$pull": {"user_favs": ObjectId(recipe_id)}})
+            return redirect(url_for("recipes.show_recipes"))
+        else:
+            flash("You are not authorised to perform that action!")
+            return redirect(url_for("recipes.recipe_detail", recipe_id=recipe_id))
+    else:
+        flash("You must be logged in to perform that action!")
+        return redirect(url_for("users.login"))
 
 # Search Page
 @recipes.route("/search_recipes")

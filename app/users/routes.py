@@ -22,6 +22,8 @@ def signup():
     to the database. Generates browser session for user and
     redirects to their profile page.
     """
+    if "user" in session:
+        return redirect(url_for("main.landing_page"))
     if request.method == "POST":
         registered_user = (coll_users.find_one(
             {"username_lower": request.form.get("username").lower()}))
@@ -124,24 +126,35 @@ def profile(username):
     Renders the user profile page, displaying their image, and
     both their own and favourite recipes.
     """
-    # Gets the user information from the database
-    user_img = coll_users.find_one({"username_lower": username})["user_img"]
-    user = coll_users.find_one({"username_lower": username})["username"]
-    favs = coll_users.find_one({"username_lower": username})["user_favs"]
-    own_recipes = coll_users.find_one(
-        {"username_lower": username})["user_recipes"]
+    if "user" in session:
+        current_user = coll_users.find_one({"username_lower": session["user"]})["_id"]
+        user_id = coll_users.find_one({"username_lower": username})["_id"]
+        if current_user == user_id:
+            # Gets the user information from the database
+            user_img = coll_users.find_one({"username_lower": username})["user_img"]
+            user = coll_users.find_one({"username_lower": username})["username"]
+            favs = coll_users.find_one({"username_lower": username})["user_favs"]
+            own_recipes = coll_users.find_one(
+                {"username_lower": username})["user_recipes"]
 
-    # Searches database for the recipe information stored in user profile
-    fav_rec = coll_recipes.find({"_id": {"$in": favs}}).sort([("views", -1)])
-    own_rec = coll_recipes.find(
-        {"_id": {"$in": own_recipes}}).sort([("views", -1)])
+            # Searches database for the recipe information stored in user profile
+            fav_rec = coll_recipes.find({"_id": {"$in": favs}}).sort([("views", -1)])
+            own_rec = coll_recipes.find(
+                {"_id": {"$in": own_recipes}}).sort([("views", -1)])
 
-    return render_template(
-        "profile.html",
-        image=user_img,
-        username=user,
-        favs=fav_rec,
-        own_rec=own_rec)
+            return render_template(
+                "profile.html",
+                image=user_img,
+                username=user,
+                favs=fav_rec,
+                own_rec=own_rec,
+                users=users)
+        else:
+            flash("You are not authorised to view that page!")
+            return redirect(url_for("main.landing_page"))
+    else:
+        flash("You must be logged in to view that page!")
+        return redirect(url_for("users.login"))
 
 
 # Change Password
@@ -154,45 +167,55 @@ def change_password(username):
     new password to user profile in database and redirects to the
     profie page.
     """
-    if request.method == "POST":
-        if check_password_hash(coll_users.find_one(
-            {"username_lower": username})["password"],
-                request.form.get("old-password")):
-            # Check length of passwords and flash error if outside limits
-            if len(request.form.get("new-password")) < 5 or len(
-                    request.form.get("new-password")) > 15:
-                flash("Passwords should be 5 - 15 characters long.")
-                return redirect(url_for(
-                    "users.change_password",
-                    username=session["user"]))
+    if "user" in session:
+        current_user = coll_users.find_one({"username_lower": session["user"]})["_id"]
+        user_id = coll_users.find_one({"username_lower": username})["_id"]
+        if current_user == user_id:
+            if request.method == "POST":
+                if check_password_hash(coll_users.find_one(
+                    {"username_lower": username})["password"],
+                        request.form.get("old-password")):
+                    # Check length of passwords and flash error if outside limits
+                    if len(request.form.get("new-password")) < 5 or len(
+                            request.form.get("new-password")) > 15:
+                        flash("Passwords should be 5 - 15 characters long.")
+                        return redirect(url_for(
+                            "users.change_password",
+                            username=session["user"]))
 
-                # Check new passwords match and updates profile
-                # with new password
-            if request.form.get("new-password") == request.form.get(
-                    "password-check"):
-                coll_users.update_one(
-                    {"username_lower": username},
-                    {"$set": {"password": generate_password_hash(
-                        request.form.get("new-password"))}})
-            else:
-                flash("New passwords do not match!")
-                return redirect(url_for(
-                    "users.change_password",
-                    username=session["user"]))
+                        # Check new passwords match and updates profile
+                        # with new password
+                    if request.form.get("new-password") == request.form.get(
+                            "password-check"):
+                        coll_users.update_one(
+                            {"username_lower": username},
+                            {"$set": {"password": generate_password_hash(
+                                request.form.get("new-password"))}})
+                    else:
+                        flash("New passwords do not match!")
+                        return redirect(url_for(
+                            "users.change_password",
+                            username=session["user"]))
+                else:
+                    flash("Original password is incorrect!")
+                    return redirect(url_for(
+                        "users.change_password",
+                        username=session["user"]))
+                # Redirect to user profile page, flashing success message
+                flash("Your password was updated successfully!")
+                return redirect(url_for("users.profile", username=session["user"]))
+
+            return render_template("changepassword.html", username=session["user"])
         else:
-            flash("Original password is incorrect!")
-            return redirect(url_for(
-                "users.change_password",
-                username=session["user"]))
-        # Redirect to user profile page, flashing success message
-        flash("Your password was updated successfully!")
-        return redirect(url_for("users.profile", username=session["user"]))
-
-    return render_template("changepassword.html", username=session["user"])
+            flash("You are not authorised to view that page!")
+            return redirect(url_for("main.landing_page"))
+    else:
+        flash("You must be logged in to view that page!")
+        return redirect(url_for("users.login"))
 
 
 # Delete Account
-@users.route("/delete-account/<username>", methods=["POST"])
+@users.route("/delete-account/<username>", methods=["GET", "POST"])
 def delete_account(username):
     """
     Method to delete the current user's profile, with the option
@@ -202,40 +225,52 @@ def delete_account(username):
     each recipe user has in their favourites. Session is then
     terminated and redirects to homepage.
     """
-    user = coll_users.find_one({"username_lower": username})
-    if check_password_hash(user["password"], request.form.get("password")):
-        user_rec = [recipe for recipe in user.get("user_recipes")]
+    if "user" in session:
+        current_user = coll_users.find_one({"username_lower": session["user"]})["_id"]
+        user_id = coll_users.find_one({"username_lower": username})["_id"]
+        if current_user == user_id:
+            if request.method == "POST":
+                user = coll_users.find_one({"username_lower": username})
+                if check_password_hash(user["password"], request.form.get("password")):
+                    user_rec = [recipe for recipe in user.get("user_recipes")]
 
-        # If checkbox selected, deletes all user recipes and remove from other
-        # users' favourite recipes.
-        if request.form.get("del-recipes") == "on":
-            for item in user_rec:
-                coll_recipes.remove({"_id": item})
-                coll_users.update_many({}, {"$pull": {"user_favs": item}})
+                    # If checkbox selected, deletes all user recipes and remove from other
+                    # users' favourite recipes.
+                    if request.form.get("del-recipes") == "on":
+                        for item in user_rec:
+                            coll_recipes.remove({"_id": item})
+                            coll_users.update_many({}, {"$pull": {"user_favs": item}})
 
-        # If user chooses not to delete their recipes, reassign the
-        # author to Admin
-        admin = coll_users.find_one({"username_lower": "admin"})["_id"]
-        for item in user_rec:
-            coll_recipes.update({"_id": item}, {"$set": {"author": admin}})
-            coll_users.update(
-                {"_id": admin}, {"$push": {"user_recipes": item}})
+                    # If user chooses not to delete their recipes, reassign the
+                    # author to Admin
+                    admin = coll_users.find_one({"username_lower": "admin"})["_id"]
+                    for item in user_rec:
+                        coll_recipes.update({"_id": item}, {"$set": {"author": admin}})
+                        coll_users.update(
+                            {"_id": admin}, {"$push": {"user_recipes": item}})
 
-        # Decrement all recipes' "favourite" integers that user had in
-        # their own favourites
-        user_favs = [fav for fav in user.get("user_favs")]
-        for fav in user_favs:
-            coll_recipes.update({"_id": fav}, {"$inc": {"favourites": -1}})
+                    # Decrement all recipes' "favourite" integers that user had in
+                    # their own favourites
+                    user_favs = [fav for fav in user.get("user_favs")]
+                    for fav in user_favs:
+                        coll_recipes.update({"_id": fav}, {"$inc": {"favourites": -1}})
 
-        # Delete User session
-        session.pop("user")
+                    # Delete User session
+                    session.pop("user")
 
-        # Delete user record
-        coll_users.remove({"_id": user.get("_id")})
-        return redirect(url_for("main.landing_page"))
+                    # Delete user record
+                    coll_users.remove({"_id": user.get("_id")})
+                    return redirect(url_for("main.landing_page"))
+                else:
+                    flash("Incorrect Password")
+                    return redirect(request.referrer)
+            return redirect(url_for("users.profile", username=username))
+        else:
+            flash("You are not authorised to view that page!")
+            return redirect(url_for("main.landing_page"))
     else:
-        flash("Incorrect Password")
-        return redirect(request.referrer)
+        flash("You must be logged in to view that page!")
+        return redirect(url_for("users.login"))
 
 
 # User Logout
