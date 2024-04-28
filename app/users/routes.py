@@ -68,6 +68,11 @@ def signup():
             flash("Supplied passwords do not match.")
             return render_template("signup.html")
 
+        # Check that the username and password are not the same
+        if request.form.get("username") == request.form.get("password-check"):
+            flash("Username and password cannot be the same.")
+            return render_template("signup.html")
+
         # Generates a profile picture based on entered username, inserting
         # randomised URL choices
         shapes = [
@@ -77,7 +82,7 @@ def signup():
             "frogideas", "sugarsweets", "heatwave", "daisygarden", "seascape",
             "summerwarmth", "duskfalling", "berrypie"]
         user_image = (
-            "https://www.tinygraphs.com/" + random.choice(shapes) +
+            "https://tinygraphs.cartesi.io/" + random.choice(shapes) +
             request.form.get("username") + "?theme=" + random.choice(theme) +
             "&numcolors=4&size=220&fmt=svg")
 
