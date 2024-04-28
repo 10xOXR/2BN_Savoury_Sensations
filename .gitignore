@@ -2,6 +2,7 @@
 .vs/
 ~$*
 *~
+.venv
 
 .sass-cache/
 *.css.map
